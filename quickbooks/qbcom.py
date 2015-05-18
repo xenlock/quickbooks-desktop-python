@@ -18,7 +18,7 @@ GenerateFromTypeLibSpec('QBXMLRP2 1.0 Type Library')
 class QuickBooks(object):
     'Wrapper for the QuickBooks RequestProcessor COM interface'
 
-    def __init__(self, application_id='', application_name='Example', company_file_name=''):
+    def __init__(self, application_id='', application_name='Example', company_file_name='', connection_type=constants.localQBD):
         'Connect'
         CoInitialize() # Needed in case we are running in a separate thread
         try:
@@ -26,7 +26,7 @@ class QuickBooks(object):
         except com_error, error:
             raise QuickBooksError('Could not access QuickBooks COM interface: %s' % error)
         try:
-            self.request_processor.OpenConnection(application_id, application_name)
+            self.request_processor.OpenConnection2(application_id, application_name, connection_type)
             self.session = self.request_processor.BeginSession(company_file_name, constants.qbFileOpenDoNotCare)
         except com_error, error:
             raise QuickBooksError('Could not start QuickBooks COM interface: %s' % error)
