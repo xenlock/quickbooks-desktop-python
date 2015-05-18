@@ -1,4 +1,4 @@
 *~
-*.csv
 *.pyc
-t.txt
+settings.json
+
