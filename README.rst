@@ -14,6 +14,8 @@ Set variables in settings.json in project and run task using windows task schedu
 
 https://www.calazan.com/windows-tip-run-applications-in-the-background-using-task-scheduler/
 
+Be sure to set --pool=solo when running working on windows. Seems to be an issue:
+http://stackoverflow.com/questions/25495613/celery-getting-started-not-able-to-retrieve-results-always-pending
 
 Requirements
 ------------

@@ -39,12 +39,12 @@ class QuickBooks(object):
         except:
             pass
 
-    def call(self, requestType, requestDictionary=None, qbxmlVersion='8.0', onError='stopOnError', saveXML=False):
+    def call(self, request_type, request_dictionary=None, qbxml_version='8.0', onError='stopOnError', saveXML=False):
         'Send request and parse response'
         def save_timestamp(name, content):
             now = datetime.datetime.now()
             open(now.strftime('%Y%m%d-%H%M%S') + '-%06i-%s' % (now.microsecond, name), 'wt').write(content)
-        request = format_request(requestType, requestDictionary or {}, qbxmlVersion, onError)
+        request = format_request(request_type, request_dictionary or {}, qbxml_version, onError)
         if saveXML:
             save_timestamp('request.xml', request)
         response = self.request_processor.ProcessRequest(self.session, request)
