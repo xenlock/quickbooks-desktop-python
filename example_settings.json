@@ -3,5 +3,5 @@
     "backend": "redis://localhost",
     "app_name": "qb_service",
     "qb_application_name":  "TestingB",
-    "qb_file_location":  "C:\some_qb_file.QBW"
+    "qb_file_location":  "C:\\some_qb_file.QBW"
 }
