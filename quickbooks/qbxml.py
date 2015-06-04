@@ -1,11 +1,16 @@
 'Functions for formatting and parsing QBXML'
-from xml.etree import ElementTree as xml
+from collections import OrderedDict
+
+from lxml import etree as xml
 
 
-def format_request(requestType, requestDictionary, qbxmlVersion, onError):
+def format_request(requestType, request_dictionary=None, qbxmlVersion='13.0', onError='stopOnError'):
     'Format request as QBXML'
-    section = xml.Element(requestType, requestID='1')
-    for key, value in requestDictionary.iteritems():
+    if not request_dictionary:
+        request_dictionary = dict()
+
+    section = xml.Element(requestType)
+    for key, value in request_dictionary.iteritems():
         section.extend(format_request_part(key, value))
     body = xml.Element('QBXMLMsgsRq', onError=onError)
     body.append(section)
@@ -16,12 +21,14 @@ def format_request(requestType, requestDictionary, qbxmlVersion, onError):
         xml.ProcessingInstruction('qbxml', 'version="%s"' % qbxmlVersion),
         document,
     ]
-    return ''.join(xml.tostring(x, encoding='utf-8') for x in elements)
+    return ''.join(xml.tostring(x, encoding='utf-8', pretty_print=True) for x in elements)
 
 
 def format_request_part(key, value):
     'Format request part recursively'
     # If value is a dictionary,
+    if isinstance(value, tuple):
+        value = OrderedDict(value)
     if hasattr(value, 'iteritems'):
         part = xml.Element(key)
         for x, y in value.iteritems():
@@ -31,6 +38,8 @@ def format_request_part(key, value):
     elif hasattr(value, '__iter__'):
         parts = []
         for valueByKey in value:
+            if isinstance(valueByKey, tuple):
+                valueByKey = OrderedDict(valueByKey)
             part = xml.Element(key)
             for x, y in valueByKey.iteritems():
                 part.extend(format_request_part(x, y))
