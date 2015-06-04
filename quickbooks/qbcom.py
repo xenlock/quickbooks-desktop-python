@@ -37,7 +37,7 @@ class QuickBooks(object):
                 self.application_id, self.application_name, self.connection_type
                 )
             self.session = self.request_processor.BeginSession(
-                company_file_name, constants.qbFileOpenDoNotCare
+                self.company_file_name, constants.qbFileOpenDoNotCare
                 )
         except com_error, error:
             raise QuickBooksError('Could not start QuickBooks COM interface: %s' % error)

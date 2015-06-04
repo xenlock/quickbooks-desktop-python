@@ -37,7 +37,7 @@ def qb_request(request_type, request_dictionary=None):
 
 
 @app.task(name='lacky.tasks.pretty_print', track_started=True, max_retries=5)
-def pretty_print(request_type='potato', request_dictionary=None):
+def pretty_print(request_type, request_dictionary=None):
     qb = QuickBooks(**QB_LOOKUP)
     qb.format_request(request_type, request_dictionary=request_dictionary, saveXML=True)
 
