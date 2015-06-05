@@ -13,12 +13,10 @@ app.conf.update(
     CELERY_ACCEPT_CONTENT=['pickle'],
     CELERY_ENABLE_UTC=True,
     CELERY_ROUTES={
-        'lacky.tasks.qb_request': {
-            'queue': 'qb_request',
-            'routing_key': 'qb_request',
+        'qb_desktop.tasks.qb_request': {'queue': 'qb_request'},
+        'qb_desktop.tasks.pretty_print': {'queue': 'pretty_print'}
         }
-    }
-)
+    )
 
 
 QB_LOOKUP = {
@@ -26,7 +24,7 @@ QB_LOOKUP = {
     'company_file_name': settings.get(u'qb_file_location')
 }
 
-@app.task(name='lacky.tasks.qb_request', track_started=True, max_retries=5)
+@app.task(name='qb_desktop.tasks.qb_request', track_started=True, max_retries=5)
 def qb_request(request_type, request_dictionary=None):
     qb = QuickBooks(**QB_LOOKUP)
     response = qb.call(request_type, request_dictionary=request_dictionary)
@@ -36,7 +34,7 @@ def qb_request(request_type, request_dictionary=None):
     return response
 
 
-@app.task(name='lacky.tasks.pretty_print', track_started=True, max_retries=5)
+@app.task(name='qb_desktop.tasks.pretty_print', track_started=True, max_retries=5)
 def pretty_print(request_type, request_dictionary=None):
     qb = QuickBooks(**QB_LOOKUP)
     qb.format_request(request_type, request_dictionary=request_dictionary, saveXML=True)
