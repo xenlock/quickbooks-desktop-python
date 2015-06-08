@@ -61,10 +61,21 @@ class QuickBooks(object):
 
     def call(self, request_type, request_dictionary=None, qbxml_version='13.0', onError='stopOnError', saveXML=False):
         'Send request and parse response'
-        self.begin_session()
         request = self.format_request(request_type, request_dictionary, qbxml_version, onError)
         response = self.request_processor.ProcessRequest(self.session, request)
         return parse_response(response)
+
+    def get_open_purchase_orders(self):
+        purchase_orders = self.call(
+            'PurchaseOrderQueryRq', request_dictionary={
+                'IncludeLineItems': '1',
+                }
+            )
+
+        return [
+            po for po in purchase_orders
+            if po.get('IsManuallyClosed') != 'true' and po.get('IsFullyReceived') != 'true'
+            ]
 
 
 class QuickBooksError(Exception):
