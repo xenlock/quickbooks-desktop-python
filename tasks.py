@@ -32,7 +32,6 @@ def qb_requests(request_list):
     Always send a list of requests so we aren't opening and closing file more than necessary
 
     ex:
-
     qb_requests.delay([
             ('ItemReceiptAddRq', receipt_instance.quickbooks_request_tuple),
             ('ItemReceiptAddRq', receipt_instance.quickbooks_request_tuple)
@@ -43,11 +42,10 @@ def qb_requests(request_list):
     qb = QuickBooks(**QB_LOOKUP)
     qb.begin_session()
 
-    response_list = []
     for request, request_dict in request_list:
         try:
             response = qb.call(request_type, request_dictionary=request_dict)
-            response_list.append(response)
+            celery_app.send_task('quickbooks.tasks.log_response', [response], queue='soc_accounting')
         except Exception as e:
             logger.error(e)
 
@@ -55,7 +53,6 @@ def qb_requests(request_list):
     celery_app.send_task('quickbooks.tasks.process_purchase_orders', [purchase_orders], queue='soc_accounting')
     # making sure to end session and close file
     del(qb)
-    return response_list
 
 
 @celery_app.task(name='qb_desktop.tasks.pretty_print', track_started=True, max_retries=5)
