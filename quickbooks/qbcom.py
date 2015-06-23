@@ -4,6 +4,7 @@ from win32com.client import Dispatch, constants
 from win32com.client.makepy import GenerateFromTypeLibSpec
 from pythoncom import CoInitialize
 from pywintypes import com_error
+import uuid
 
 from .qbxml import format_request, parse_response
 
@@ -53,7 +54,7 @@ class QuickBooks(object):
     def format_request(self, request_type, request_dictionary=None, qbxml_version='13.0', onError='stopOnError', saveXML=False):
         def save_timestamp(name, content):
             now = datetime.datetime.now()
-            open(now.strftime('%Y%m%d-%H%M%S') + '-%06i-%s' % (now.microsecond, name), 'wt').write(content)
+            open(now.strftime('%Y%m%d-%H%M%S') + '-{}{}'.format(uuid.uuid4(), name), 'wt').write(content)
         request = format_request(request_type, request_dictionary, qbxml_version, onError)
         if saveXML:
             save_timestamp('request.xml', request)

@@ -1,15 +1,17 @@
 'Functions for formatting and parsing QBXML'
 from collections import OrderedDict
 
+import json
 from lxml import etree as xml
+import xmltodict
 
 
-def format_request(requestType, request_dictionary=None, qbxmlVersion='13.0', onError='stopOnError'):
+def format_request(request_type, request_dictionary=None, qbxmlVersion='13.0', onError='stopOnError'):
     'Format request as QBXML'
     if not request_dictionary:
         request_dictionary = dict()
 
-    section = xml.Element(requestType)
+    section = xml.Element(request_type)
     for key, value in request_dictionary.iteritems():
         section.extend(format_request_part(key, value))
     body = xml.Element('QBXMLMsgsRq', onError=onError)
@@ -54,30 +56,5 @@ def format_request_part(key, value):
 
 def parse_response(response):
     'Parse QBXML response into a list of dictionaries'
-    document = xml.XML(response)
-    body = document[0]
-    section = body[0]
-    valueByKeys = []
-    for part in section:
-        valueByKeys.append(parse_response_part(part))
-    if not valueByKeys:
-        raise Exception(section.get('statusMessage'))
-    return valueByKeys
+    return xmltodict.parse(response)
 
-
-def parse_response_part(part):
-    'Parse response part recursively'
-    if not part.getchildren():
-        return part.text
-    valueByKey = {}
-    for element in part:
-        key = element.tag
-        content = parse_response_part(element)
-        if key in valueByKey:
-            oldValue = valueByKey[key]
-            newValue = oldValue if hasattr(oldValue, 'append') else [oldValue]
-            newValue.append(content)
-        else:
-            newValue = content
-        valueByKey[key] = newValue
-    return valueByKey

@@ -13,7 +13,7 @@ with open("settings.json") as fin:
 
 celery_app = Celery(settings.get('app_name'), broker=settings.get('broker'))
 celery_app.conf.update(
-    CELERY_ACCEPT_CONTENT=['pickle'],
+    CELERY_ACCEPT_CONTENT=['pickle', 'json'],
     CELERY_RESULT_BACKEND=settings.get('backend'),
     CELERY_ENABLE_UTC=True,
     CELERY_DEFAULT_QUEUE='quickbooks',
@@ -27,11 +27,10 @@ QB_LOOKUP = {
 }
 
 @celery_app.task(name='qb_desktop.tasks.qb_requests', track_started=True, max_retries=5)
-def qb_requests(request_list):
+def qb_requests(request_list=None):
     """
     Always send a list of requests so we aren't opening and closing file more than necessary
-
-    ex:
+    ex: 
     qb_requests.delay([
             ('ItemReceiptAddRq', receipt_instance.quickbooks_request_tuple),
             ('ItemReceiptAddRq', receipt_instance.quickbooks_request_tuple)
@@ -42,12 +41,15 @@ def qb_requests(request_list):
     qb = QuickBooks(**QB_LOOKUP)
     qb.begin_session()
 
-    for request, request_dict in request_list:
-        try:
-            response = qb.call(request_type, request_dictionary=request_dict)
-            celery_app.send_task('quickbooks.tasks.log_response', [response], queue='soc_accounting')
-        except Exception as e:
-            logger.error(e)
+    # process request list if it exists or just get open purchase orders
+    if request_list:
+        for entry in request_list:
+            try:
+                request_type, request_dict = entry
+                response = qb.call(request_type, request_dictionary=request_dict)
+                celery_app.send_task('quickbooks.tasks.log_response', [request_type, response], queue='soc_accounting')
+            except Exception as e:
+                logger.error(e)
 
     purchase_orders = qb.get_open_purchase_orders()
     celery_app.send_task('quickbooks.tasks.process_purchase_orders', [purchase_orders], queue='soc_accounting')
@@ -56,7 +58,10 @@ def qb_requests(request_list):
 
 
 @celery_app.task(name='qb_desktop.tasks.pretty_print', track_started=True, max_retries=5)
-def pretty_print(request_type, request_dictionary=None):
+def pretty_print(request_list):
     qb = QuickBooks(**QB_LOOKUP)
-    qb.format_request(request_type, request_dictionary=request_dictionary, saveXML=True)
+
+    for entry in request_list:
+        request_type, request_dict = entry
+        qb.format_request(request_type, request_dictionary=request_dict, saveXML=True)
 

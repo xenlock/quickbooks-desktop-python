@@ -1,3 +1,4 @@
 celery==3.1.18
 lxml
 redis==2.10.3
+xmltodict
