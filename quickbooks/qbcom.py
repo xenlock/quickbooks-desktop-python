@@ -67,6 +67,7 @@ class QuickBooks(object):
         return parse_response(response)
 
     def get_open_purchase_orders(self):
+        ## TODO broken need to  fix
         purchase_orders = self.call(
             'PurchaseOrderQueryRq', request_dictionary={
                 'IncludeLineItems': '1',

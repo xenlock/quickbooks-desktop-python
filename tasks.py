@@ -51,8 +51,6 @@ def qb_requests(request_list=None):
             except Exception as e:
                 logger.error(e)
 
-    purchase_orders = qb.get_open_purchase_orders()
-    celery_app.send_task('quickbooks.tasks.process_purchase_orders', [purchase_orders], queue='soc_accounting')
     # making sure to end session and close file
     del(qb)
 

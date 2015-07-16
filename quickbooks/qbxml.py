@@ -37,7 +37,7 @@ def format_request_part(key, value):
             part.extend(format_request_part(x, y))
         return [part]
     # If value is a list of dictionaries,
-    elif hasattr(value, '__iter__'):
+    elif isinstance(value, list):
         parts = []
         for valueByKey in value:
             if isinstance(valueByKey, tuple):
