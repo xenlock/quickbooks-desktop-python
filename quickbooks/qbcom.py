@@ -19,11 +19,12 @@ GenerateFromTypeLibSpec('QBXMLRP2 1.0 Type Library')
 class QuickBooks(object):
     'Wrapper for the QuickBooks RequestProcessor COM interface'
 
-    def __init__(self, application_id='', application_name='Example', company_file_name='', connection_type=constants.localQBD):
+    def __init__(self, application_id='', application_name='Example', company_file_name='', initial_sync=False, connection_type=constants.localQBD):
         'Connect'
         self.application_id = application_id
         self.application_name = application_name
         self.company_file_name = company_file_name
+        self.initial_sync = initial_sync
         self.connection_type = connection_type
 
     def begin_session(self):
@@ -66,13 +67,13 @@ class QuickBooks(object):
         response = self.request_processor.ProcessRequest(self.session, request)
         return parse_response(response)
 
-    def get_open_purchase_orders(self):
-        ## TODO broken need to  fix
-        purchase_orders = self.call(
-            'PurchaseOrderQueryRq', request_dictionary={
-                'IncludeLineItems': '1',
-                }
-            )
+    def get_open_purchase_orders(self, start_date=None):
+        request_dict = [('IncludeLineItems', '1')]
+
+        if start_date:
+            request_dict = [('ModifiedDateRangeFilter', {'FromModifiedDate': str(start_date)})] + request_dict
+        response = self.call('PurchaseOrderQueryRq', request_dictionary=tuple(request_dict))
+        purchase_orders = response['PurchaseOrderQueryRs']['PurchaseOrderRet']
 
         return [
             po for po in purchase_orders
