@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import datetime
 import json
 
@@ -47,6 +48,7 @@ def qb_requests(request_list=None, initial=False):
         for entry in request_list:
             try:
                 request_type, request_dict = entry
+                request_dict = OrderedDict(request_dict)
                 response = qb.call(request_type, request_dictionary=request_dict)
                 celery_app.send_task('quickbooks.tasks.log_response', [request_type, response], queue='soc_accounting')
             except Exception as e:

@@ -1,4 +1,5 @@
 'Convenience classes for interacting with QuickBooks via win32com'
+from collections import OrderedDict
 import datetime
 from win32com.client import Dispatch, constants
 from win32com.client.makepy import GenerateFromTypeLibSpec
@@ -19,12 +20,11 @@ GenerateFromTypeLibSpec('QBXMLRP2 1.0 Type Library')
 class QuickBooks(object):
     'Wrapper for the QuickBooks RequestProcessor COM interface'
 
-    def __init__(self, application_id='', application_name='Example', company_file_name='', initial_sync=False, connection_type=constants.localQBD):
+    def __init__(self, application_id='', application_name='Example', company_file_name='', connection_type=constants.localQBD):
         'Connect'
         self.application_id = application_id
         self.application_name = application_name
         self.company_file_name = company_file_name
-        self.initial_sync = initial_sync
         self.connection_type = connection_type
 
     def begin_session(self):
@@ -68,12 +68,25 @@ class QuickBooks(object):
         return parse_response(response)
 
     def get_open_purchase_orders(self, start_date=None):
-        request_dict = [('IncludeLineItems', '1')]
-
+        request_args = [('IncludeLineItems', '1')]
         if start_date:
-            request_dict = [('ModifiedDateRangeFilter', {'FromModifiedDate': str(start_date)})] + request_dict
-        response = self.call('PurchaseOrderQueryRq', request_dictionary=tuple(request_dict))
+            request_args = [('ModifiedDateRangeFilter', {'FromModifiedDate': str(start_date)})] + request_args
+
+        response = self.call('PurchaseOrderQueryRq', request_dictionary=OrderedDict(request_args))
+        # remove unnecessary nesting
         purchase_orders = response['PurchaseOrderQueryRs']['PurchaseOrderRet']
+
+        # keep purchase order line items consistent 
+        for po in purchase_orders:
+            po_lines = po.get('PurchaseOrderLineRet', {})
+            if not po_lines:
+                po_lines = po.get('PurchaseOrderLineGroupRet', {}).get(
+                    'PurchaseOrderLineRet', {}
+                    )
+            if not isinstance(po_lines, list):
+                po_lines = [po_lines]
+            po['po_lines'] = po_lines
+
 
         return [
             po for po in purchase_orders
