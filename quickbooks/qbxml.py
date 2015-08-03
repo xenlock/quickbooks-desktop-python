@@ -6,8 +6,10 @@ from lxml import etree as xml
 import xmltodict
 
 
-def format_request(request_type, request_dictionary=dict(), qbxmlVersion='13.0', onError='stopOnError'):
+def format_request(request_type, request_dictionary=None, qbxmlVersion='13.0', onError='stopOnError'):
     'Format request as QBXML'
+    if not request_dictionary:
+        request_dictionary = dict()
     section = xml.Element(request_type)
     for key, value in request_dictionary.iteritems():
         section.extend(format_request_part(key, value))

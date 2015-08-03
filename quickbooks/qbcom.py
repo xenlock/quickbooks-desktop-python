@@ -16,6 +16,8 @@ from .qbxml import format_request, parse_response
 # e.g. /Python27/Lib/site-packages/win32com/gen_py/
 GenerateFromTypeLibSpec('QBXMLRP2 1.0 Type Library')
 
+# CLASSES filter for purchase orders
+QUICKBOOKS_CLASSES = ["Gifting"]
 
 class QuickBooks(object):
     'Wrapper for the QuickBooks RequestProcessor COM interface'
@@ -75,6 +77,12 @@ class QuickBooks(object):
         response = self.call('PurchaseOrderQueryRq', request_dictionary=OrderedDict(request_args))
         # remove unnecessary nesting
         purchase_orders = response['PurchaseOrderQueryRs']['PurchaseOrderRet']
+
+        # only include relevant quickbooks classes
+        purchase_orders = [
+            purchase_order for purchase_order in purchase_orders if
+            purchase_order.get('ClassRef', {}).get('FullName') in QUICKBOOKS_CLASSES
+            ]
 
         # keep purchase order line items consistent 
         for po in purchase_orders:
