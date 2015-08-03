@@ -16,7 +16,7 @@ from .qbxml import format_request, parse_response
 # e.g. /Python27/Lib/site-packages/win32com/gen_py/
 GenerateFromTypeLibSpec('QBXMLRP2 1.0 Type Library')
 
-# CLASSES filter for purchase orders
+# Quickbook's classes are like categories for transactions
 QUICKBOOKS_CLASSES = ["Gifting"]
 
 class QuickBooks(object):
