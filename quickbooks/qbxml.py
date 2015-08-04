@@ -10,7 +10,6 @@ def format_request(request_type, request_dictionary=None, qbxmlVersion='13.0', o
     'Format request as QBXML'
     if not request_dictionary:
         request_dictionary = dict()
-
     section = xml.Element(request_type)
     for key, value in request_dictionary.iteritems():
         section.extend(format_request_part(key, value))
@@ -56,5 +55,6 @@ def format_request_part(key, value):
 
 def parse_response(response):
     'Parse QBXML response into a list of dictionaries'
-    return xmltodict.parse(response)
+    response_dict = xmltodict.parse(response)
+    return response_dict['QBXML']['QBXMLMsgsRs']
 

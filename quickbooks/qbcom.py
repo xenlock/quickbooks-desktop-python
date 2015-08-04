@@ -1,4 +1,5 @@
 'Convenience classes for interacting with QuickBooks via win32com'
+from collections import OrderedDict
 import datetime
 from win32com.client import Dispatch, constants
 from win32com.client.makepy import GenerateFromTypeLibSpec
@@ -15,6 +16,8 @@ from .qbxml import format_request, parse_response
 # e.g. /Python27/Lib/site-packages/win32com/gen_py/
 GenerateFromTypeLibSpec('QBXMLRP2 1.0 Type Library')
 
+# Quickbook's classes are like categories for transactions
+QUICKBOOKS_CLASSES = ["Gifting"]
 
 class QuickBooks(object):
     'Wrapper for the QuickBooks RequestProcessor COM interface'
@@ -66,13 +69,32 @@ class QuickBooks(object):
         response = self.request_processor.ProcessRequest(self.session, request)
         return parse_response(response)
 
-    def get_open_purchase_orders(self):
-        ## TODO broken need to  fix
-        purchase_orders = self.call(
-            'PurchaseOrderQueryRq', request_dictionary={
-                'IncludeLineItems': '1',
-                }
-            )
+    def get_open_purchase_orders(self, start_date=None):
+        request_args = [('IncludeLineItems', '1')]
+        if start_date:
+            request_args = [('ModifiedDateRangeFilter', {'FromModifiedDate': str(start_date)})] + request_args
+
+        response = self.call('PurchaseOrderQueryRq', request_dictionary=OrderedDict(request_args))
+        # remove unnecessary nesting
+        purchase_orders = response['PurchaseOrderQueryRs']['PurchaseOrderRet']
+
+        # only include relevant quickbooks classes
+        purchase_orders = [
+            purchase_order for purchase_order in purchase_orders if
+            purchase_order.get('ClassRef', {}).get('FullName') in QUICKBOOKS_CLASSES
+            ]
+
+        # keep purchase order line items consistent 
+        for po in purchase_orders:
+            po_lines = po.get('PurchaseOrderLineRet', {})
+            if not po_lines:
+                po_lines = po.get('PurchaseOrderLineGroupRet', {}).get(
+                    'PurchaseOrderLineRet', {}
+                    )
+            if not isinstance(po_lines, list):
+                po_lines = [po_lines]
+            po['po_lines'] = po_lines
+
 
         return [
             po for po in purchase_orders

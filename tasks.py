@@ -1,3 +1,5 @@
+from collections import OrderedDict
+import datetime
 import json
 
 from celery import Celery
@@ -27,7 +29,7 @@ QB_LOOKUP = {
 }
 
 @celery_app.task(name='qb_desktop.tasks.qb_requests', track_started=True, max_retries=5)
-def qb_requests(request_list=None):
+def qb_requests(request_list=None, initial=False):
     """
     Always send a list of requests so we aren't opening and closing file more than necessary
     ex: 
@@ -46,11 +48,19 @@ def qb_requests(request_list=None):
         for entry in request_list:
             try:
                 request_type, request_dict = entry
+                request_dict = OrderedDict(request_dict)
                 response = qb.call(request_type, request_dictionary=request_dict)
                 celery_app.send_task('quickbooks.tasks.log_response', [request_type, response], queue='soc_accounting')
             except Exception as e:
                 logger.error(e)
 
+    if initial:
+        start_date = None
+    else:
+        start_date = datetime.date.today() - datetime.timedelta(days=30)
+
+    purchase_orders = qb.get_open_purchase_orders(start_date=start_date)
+    celery_app.send_task('quickbooks.tasks.process_purchase_orders', [purchase_orders], queue='soc_accounting')
     # making sure to end session and close file
     del(qb)
 
