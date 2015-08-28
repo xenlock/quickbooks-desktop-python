@@ -10,10 +10,20 @@ Most of the logic will be performed by outside project running on well behaved o
 
 http://www.imankulov.name/posts/celery-for-internal-api.html
 
-Set variables in settings.json in project and run task using windows task scheduler
+Set variables in settings.json in project and run task using as windows service using the following commands:
 
-https://www.calazan.com/windows-tip-run-applications-in-the-background-using-task-scheduler/
+```
+    python service.py --startup=auto install
+    python service.py start
 
+```
+And to remove:
+
+```
+    python service.py stop
+    python service.py remove
+
+```
 Be sure to set --pool=solo when running working on windows. Seems to be an issue:
 http://stackoverflow.com/questions/25495613/celery-getting-started-not-able-to-retrieve-results-always-pending
 
