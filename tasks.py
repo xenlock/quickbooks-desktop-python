@@ -28,6 +28,7 @@ QB_LOOKUP = {
     'company_file_name': settings.get(u'qb_file_location')
 }
 
+
 @celery_app.task(name='qb_desktop.tasks.qb_requests', track_started=True, max_retries=5)
 def qb_requests(request_list=None, initial=False):
     """
@@ -56,7 +57,7 @@ def qb_requests(request_list=None, initial=False):
     if initial:
         start_date = None
     else:
-        start_date = datetime.date.today() - datetime.timedelta(days=30)
+        start_date = datetime.date.today() - datetime.timedelta(days=90)
 
     purchase_orders = qb.get_open_purchase_orders(start_date=start_date)
     celery_app.send_task('quickbooks.tasks.process_purchase_orders', [purchase_orders], queue='soc_accounting')
