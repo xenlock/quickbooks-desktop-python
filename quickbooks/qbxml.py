@@ -1,4 +1,5 @@
 'Functions for formatting and parsing QBXML'
+from __future__ import unicode_literals
 from collections import OrderedDict
 
 import json
@@ -22,7 +23,7 @@ def format_request(request_type, request_dictionary=None, qbxmlVersion='13.0', o
         xml.ProcessingInstruction('qbxml', 'version="%s"' % qbxmlVersion),
         document,
     ]
-    return ''.join(xml.tostring(x, encoding='utf-8', pretty_print=True) for x in elements)
+    return ''.join(xml.tostring(x, pretty_print=True) for x in elements)
 
 
 def format_request_part(key, value):
@@ -49,7 +50,7 @@ def format_request_part(key, value):
     # If value is neither a dictionary nor a list,
     else:
         part = xml.Element(key)
-        part.text = str(value)
+        part.text = value
         return [part]
 
 
