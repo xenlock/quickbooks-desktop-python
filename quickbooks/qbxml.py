@@ -50,7 +50,7 @@ def format_request_part(key, value):
     # If value is neither a dictionary nor a list,
     else:
         part = xml.Element(key)
-        part.text = value
+        part.text = str(value)
         return [part]
 
 
