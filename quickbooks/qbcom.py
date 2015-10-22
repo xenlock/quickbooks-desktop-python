@@ -101,6 +101,17 @@ class QuickBooks(object):
             if po.get('IsManuallyClosed') != 'true' and po.get('IsFullyReceived') != 'true'
             ]
 
+    def get_items(self):
+        response = self.call('ItemQueryRq')
+        # remove unnecessary nesting
+        items = response['ItemQueryRs']
+        keys = [key for key in items.keys() if 'Item' in key]
+
+        for category in keys:
+            for item in items[category]:
+                item['category'] = category
+                yield item
+
 
 class QuickBooksError(Exception):
     pass

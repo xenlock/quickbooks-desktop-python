@@ -65,6 +65,15 @@ def qb_requests(request_list=None, initial=False):
     del(qb)
 
 
+@celery_app.task(name='qb_desktop.tasks.get_items', track_started=True, max_retries=5)
+def get_items():
+    qb = QuickBooks(**QB_LOOKUP)
+    qb.begin_session()
+    for item in qb.get_items():
+        celery_app.send_task('quickbooks.tasks.process_item', [item], queue='soc_accounting')
+    del(qb)
+
+
 @celery_app.task(name='qb_desktop.tasks.pretty_print', track_started=True, max_retries=5)
 def pretty_print(request_list):
     qb = QuickBooks(**QB_LOOKUP)
