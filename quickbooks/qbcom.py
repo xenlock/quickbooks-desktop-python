@@ -69,6 +69,8 @@ class QuickBooks(object):
         response = self.request_processor.ProcessRequest(self.session, request)
         return parse_response(response)
 
+
+
     def get_open_purchase_orders(self, start_date=None):
         request_args = [('IncludeLineItems', '1')]
         if start_date:
@@ -78,28 +80,28 @@ class QuickBooks(object):
         # remove unnecessary nesting
         purchase_orders = response['PurchaseOrderQueryRs']['PurchaseOrderRet']
 
-        # only include relevant quickbooks classes
-        purchase_orders = [
-            purchase_order for purchase_order in purchase_orders if
-            purchase_order.get('ClassRef', {}).get('FullName') in QUICKBOOKS_CLASSES
-            ]
+        def get_lines(po_line_ret):
+            if not isinstance(po_line_ret, list):
+                po_line_ret = [po_line_ret]
+            for line in po_line_ret:
+                purchase_order['po_lines'].append(line)
+                            
+        for purchase_order in purchase_orders:
+            # don't grab closed purchase orders
+            if purchase_order.get('IsManuallyClosed') != 'true' and purchase_order.get('IsFullyReceived') != 'true':
+                # only include relevant quickbooks classes
+                if purchase_order.get('ClassRef', {}).get('FullName') in QUICKBOOKS_CLASSES:
+                    # keep purchase order line items consistent 
+                    purchase_order['po_lines'] = []
+                    get_lines(purchase_order.get('PurchaseOrderLineRet', {}))
 
-        # keep purchase order line items consistent 
-        for po in purchase_orders:
-            po_lines = po.get('PurchaseOrderLineRet', {})
-            if not po_lines:
-                po_lines = po.get('PurchaseOrderLineGroupRet', {}).get(
-                    'PurchaseOrderLineRet', {}
-                    )
-            if not isinstance(po_lines, list):
-                po_lines = [po_lines]
-            po['po_lines'] = po_lines
+                    po_line_groups = purchase_order.get('PurchaseOrderLineGroupRet', {})
+                    if not isinstance(po_line_groups, list):
+                        po_line_groups = [po_line_groups]
+                    for group in po_line_groups: 
+                        get_lines(group.get('PurchaseOrderLineRet', {}))
 
-
-        return [
-            po for po in purchase_orders
-            if po.get('IsManuallyClosed') != 'true' and po.get('IsFullyReceived') != 'true'
-            ]
+                    yield purchase_order
 
     def get_items(self):
         response = self.call('ItemQueryRq')
