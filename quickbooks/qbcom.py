@@ -80,28 +80,31 @@ class QuickBooks(object):
         # remove unnecessary nesting
         purchase_orders = response['PurchaseOrderQueryRs']['PurchaseOrderRet']
 
-        def get_lines(po_line_ret):
-            if not isinstance(po_line_ret, list):
-                po_line_ret = [po_line_ret]
-            for line in po_line_ret:
-                purchase_order['po_lines'].append(line)
-                            
+	verified_pos = []
         for purchase_order in purchase_orders:
+            def get_lines(po_line_ret):
+                if not isinstance(po_line_ret, list):
+                    po_line_ret = [po_line_ret]
+                for line in po_line_ret:
+                    purchase_order['po_lines'].append(line)
+                           
             # don't grab closed purchase orders
             if purchase_order.get('IsManuallyClosed') != 'true' and purchase_order.get('IsFullyReceived') != 'true':
                 # only include relevant quickbooks classes
                 if purchase_order.get('ClassRef', {}).get('FullName') in QUICKBOOKS_CLASSES:
                     # keep purchase order line items consistent 
-                    purchase_order['po_lines'] = []
-                    get_lines(purchase_order.get('PurchaseOrderLineRet', {}))
+		    purchase_order['po_lines'] = []
+                    get_lines(purchase_order.get('PurchaseOrderLineRet', []))
 
                     po_line_groups = purchase_order.get('PurchaseOrderLineGroupRet', {})
                     if not isinstance(po_line_groups, list):
                         po_line_groups = [po_line_groups]
                     for group in po_line_groups: 
-                        get_lines(group.get('PurchaseOrderLineRet', {}))
-
-                    yield purchase_order
+                        get_lines(group.get('PurchaseOrderLineRet', []))
+		    
+		    if purchase_order['po_lines']:
+                        verified_pos.append(purchase_order)
+	return verified_pos
 
     def get_items(self):
         response = self.call('ItemQueryRq')

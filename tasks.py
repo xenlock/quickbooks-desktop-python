@@ -59,8 +59,8 @@ def qb_requests(request_list=None, initial=False):
     else:
         start_date = datetime.date.today() - datetime.timedelta(days=90)
 
-    purchase_orders = [po for po in qb.get_open_purchase_orders(start_date=start_date) if po]
-    celery_app.send_task('quickbooks.tasks.process_purchase_orders', [purchase_orders], queue='soc_accounting')
+    for purchase_order in qb.get_open_purchase_orders(start_date=start_date):
+        celery_app.send_task('quickbooks.tasks.process_purchase_order', [purchase_order], queue='soc_accounting')
     # making sure to end session and close file
     del(qb)
 
