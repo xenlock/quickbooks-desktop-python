@@ -1,17 +1,34 @@
+from __future__ import absolute_import
+
 from collections import OrderedDict
 import datetime
 import json
 
-from celery import Celery
+import celery
 from celery.utils.log import get_task_logger
+from raven import Client as RavenClient
+from raven.contrib.celery import register_signal, register_logger_signal
 
 from quickbooks import QuickBooks
 
 
 logger = get_task_logger(__name__)
 
+
 with open("settings.json") as fin:
     settings = json.loads(fin.read())
+
+
+class Celery(celery.Celery):
+    def on_configure(self):
+        client = RavenClient(settings.get('sentry_dsn'))
+
+        # register a custom filter to filter out duplicate logs
+        register_logger_signal(client)
+
+        # hook into the Celery error handler
+        register_signal(client)
+
 
 celery_app = Celery(settings.get('app_name'), broker=settings.get('broker'))
 celery_app.conf.update(
@@ -20,7 +37,7 @@ celery_app.conf.update(
     CELERY_ENABLE_UTC=True,
     CELERY_DEFAULT_QUEUE='quickbooks',
     IGNORE_RESULT=False
-    )
+)
 
 
 QB_LOOKUP = {
