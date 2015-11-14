@@ -69,8 +69,6 @@ class QuickBooks(object):
         response = self.request_processor.ProcessRequest(self.session, request)
         return parse_response(response)
 
-
-
     def get_open_purchase_orders(self, start_date=None):
         request_args = [('IncludeLineItems', '1')]
         if start_date:

@@ -1,10 +1,14 @@
 'Functions for formatting and parsing QBXML'
 from __future__ import unicode_literals
 from collections import OrderedDict
+from celery.utils.log import get_task_logger
 
 import json
 from lxml import etree as xml
 import xmltodict
+
+
+logger = get_task_logger(__name__)
 
 
 def format_request(request_type, request_dictionary=None, qbxmlVersion='13.0', onError='stopOnError'):
@@ -57,5 +61,11 @@ def format_request_part(key, value):
 def parse_response(response):
     'Parse QBXML response into a list of dictionaries'
     response_dict = xmltodict.parse(response)
-    return response_dict['QBXML']['QBXMLMsgsRs']
+    response_body = response_dict['QBXML']['QBXMLMsgsRs']
+    qb_error = response_body.get(list(response_body.keys())[0], {}).get(
+        '@statusSeverity'
+    )
+    if qb_error:
+        logger.error(response_body)
+    return response_body
 
