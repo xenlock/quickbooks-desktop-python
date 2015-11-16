@@ -65,9 +65,10 @@ def qb_requests(request_list=None, initial=False):
     if request_list:
         for entry in request_list:
             try:
-                request_type, request_dict = entry
+                surrogate_key, model_name, request_body = entry
+                request_type, request_dict = request_body
                 response = qb.call(request_type, request_dictionary=request_dict)
-                celery_app.send_task('quickbooks.tasks.log_response', [request_type, response], queue='soc_accounting')
+                celery_app.send_task('quickbooks.tasks.process_response', [surrogate_key, model_name, response], queue='soc_accounting')
             except Exception as e:
                 logger.error(e)
 
