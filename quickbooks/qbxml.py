@@ -1,14 +1,15 @@
 'Functions for formatting and parsing QBXML'
 from __future__ import unicode_literals
+from celery.utils.log import get_task_logger
 from collections import OrderedDict
-import logging
 
 import json
 from lxml import etree as xml
 import xmltodict
 
 
-logger = logging.getLogger(__name__)
+
+logger = get_task_logger(__name__)
 
 
 def format_request(request_type, request_dictionary=None, qbxmlVersion='13.0', onError='stopOnError'):
