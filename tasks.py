@@ -56,7 +56,13 @@ def qb_requests(request_list=None, initial=False, with_sides=True):
             (item_key, model_name, ('ItemReceiptAddRq', receipt_instance.quickbooks_request_tuple))
             ])
 
-    Also will be grabbing and returning list of all open purchase orders in the process
+    By default we are also grabbing and returning list of all open purchase orders in the process and likely performing some more tasks going forward.  This way we get the latest list of purchase orders each time we post item receipts.  This is optional if we are making a lot of requests that don't need to be concerned with purchase orders for every request.
+
+    qb_requests.delay([
+            (item_key, model_name, ('ItemReceiptAddRq', receipt_instance.quickbooks_request_tuple)),
+            (item_key, model_name, ('ItemReceiptAddRq', receipt_instance.quickbooks_request_tuple))
+            ]), with_sides=False)
+
     """
     qb = QuickBooks(**QB_LOOKUP)
     qb.begin_session()
