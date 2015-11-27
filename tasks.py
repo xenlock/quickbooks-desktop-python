@@ -61,7 +61,7 @@ def qb_requests(request_list=None, initial=False, with_sides=True):
     qb_requests.delay([
             (item_key, model_name, ('ItemReceiptAddRq', receipt_instance.quickbooks_request_tuple)),
             (item_key, model_name, ('ItemReceiptAddRq', receipt_instance.quickbooks_request_tuple))
-            ]), with_sides=False)
+            ], with_sides=False)
 
     """
     qb = QuickBooks(**QB_LOOKUP)

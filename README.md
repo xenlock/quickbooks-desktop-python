@@ -57,7 +57,7 @@ By default we are also grabbing and returning list of all open purchase orders i
 qb_requests.delay([
         (item_key, model_name, ('ItemReceiptAddRq', receipt_instance.quickbooks_request_tuple)),
         (item_key, model_name, ('ItemReceiptAddRq', receipt_instance.quickbooks_request_tuple))
-        ]), with_sides=False)
+        ], with_sides=False)
 
 ```
 
