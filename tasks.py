@@ -20,7 +20,7 @@ QB_LOOKUP = {
 
 
 @celery_app.task(name='qb_desktop.tasks.qb_requests', track_started=True, max_retries=5)
-def qb_requests(request_list=None, initial=False, with_sides=True):
+def qb_requests(request_list=None, initial=False, with_sides=True, app='quickbooks'):
     """
     Always send a list of requests so we aren't opening and closing file more than necessary
     ex: 
@@ -48,7 +48,7 @@ def qb_requests(request_list=None, initial=False, with_sides=True):
                 request_type, request_dict = request_body
                 response = qb.call(request_type, request_dictionary=request_dict)
                 if surrogate_key and request_dict:
-                    celery_app.send_task('quickbooks.tasks.process_response', [surrogate_key, model_name, response], queue='soc_accounting')
+                    celery_app.send_task('quickbooks.tasks.process_response', [surrogate_key, model_name, response, app], queue='soc_accounting')
             except Exception as e:
                 logger.error(e)
 
@@ -83,14 +83,15 @@ def pretty_print(request_list):
     send the same list of requests as you would to qb_request without the key or model name.  The requests will be formatted to qbxml and saved to files in the worker directory where they can be tested using the qbxml validator from intuit
     ex: 
     pretty_print.delay([
-            ('ItemReceiptAddRq', receipt_instance.quickbooks_request_tuple),
-            ('ItemReceiptAddRq', receipt_instance.quickbooks_request_tuple)
+            (item_key, model_name, ('ItemReceiptAddRq', receipt_instance.quickbooks_request_tuple)),
+            (item_key, model_name, ('ItemReceiptAddRq', receipt_instance.quickbooks_request_tuple))
             ])
 
     """
     qb = QuickBooks(**QB_LOOKUP)
 
     for entry in request_list:
-        request_type, request_dict = entry
+        surrogate_key, model_name, request_body = entry
+        request_type, request_dict = request_body
         qb.format_request(request_type, request_dictionary=request_dict, saveXML=True)
 
