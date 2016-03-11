@@ -1,15 +1,16 @@
 'Functions for formatting and parsing QBXML'
 from __future__ import unicode_literals
-from celery.utils.log import get_task_logger
-from collections import OrderedDict
 
+from collections import OrderedDict
 import json
+import logging
 from lxml import etree as xml
 import xmltodict
 
+from .exceptions import QuickBooksError
 
 
-logger = get_task_logger(__name__)
+logger = logging.getLogger(__name__)
 
 
 def format_request(request_type, request_dictionary=None, qbxmlVersion='13.0', onError='stopOnError'):
@@ -59,13 +60,13 @@ def format_request_part(key, value):
         return [part]
 
 
-def parse_response(response):
+def parse_response(request_type, response):
     'Parse QBXML response into a list of dictionaries'
     response_dict = xmltodict.parse(response)
     response_body = response_dict['QBXML']['QBXMLMsgsRs']
     contents = response_body.get(list(response_body.keys())[0], {})
     qb_error = contents.get('@statusSeverity')
     if qb_error == 'Error':
-        logger.error(contents.get('@statusMessage'))
+        logger.error('Request Type: {} Error Message: {}'.format(request_type, contents.get('@statusMessage')))
     return response_body
 

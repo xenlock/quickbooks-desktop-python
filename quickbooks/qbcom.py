@@ -7,6 +7,7 @@ from pythoncom import CoInitialize
 from pywintypes import com_error
 import uuid
 
+from .exceptions import QuickBooksError
 from .qbxml import format_request, parse_response
 
 
@@ -67,7 +68,7 @@ class QuickBooks(object):
         'Send request and parse response'
         request = self.format_request(request_type, request_dictionary, qbxml_version, onError)
         response = self.request_processor.ProcessRequest(self.session, request)
-        return parse_response(response)
+        return parse_response(request_type, response)
 
     def get_open_purchase_orders(self, start_date=None):
         request_args = [('IncludeLineItems', '1')]
@@ -114,8 +115,4 @@ class QuickBooks(object):
             for item in items[category]:
                 item['category'] = category
                 yield item
-
-
-class QuickBooksError(Exception):
-    pass
 

@@ -4,19 +4,14 @@ from collections import OrderedDict
 import datetime
 import json
 
-from celery_app import celery_app, SETTINGS
+from celery_app import celery_app
+from config import QB_LOOKUP
 from celery.utils.log import get_task_logger
 
 from quickbooks import QuickBooks
 
 
 logger = get_task_logger(__name__)
-
-
-QB_LOOKUP = {
-    'application_name': SETTINGS.get(u'qb_application_name'),
-    'company_file_name': SETTINGS.get(u'qb_file_location')
-}
 
 
 @celery_app.task(name='qb_desktop.tasks.qb_requests', track_started=True, max_retries=5)
