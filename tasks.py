@@ -61,13 +61,13 @@ def qb_requests(request_list=None, initial=False, with_sides=True, app='quickboo
 
 
 @celery_app.task(name='qb_desktop.tasks.get_items', track_started=True, max_retries=5)
-def get_items():
+def get_items(initial=False):
     """
     this task takes no arguments and just grabs every item in Quickbooks and sends a task to process the response for each item.  I will likely be adding argument for item type in the future.
     """
     qb = QuickBooks(**QB_LOOKUP)
     qb.begin_session()
-    for item in qb.get_items():
+    for item in qb.get_items(initial=initial):
         celery_app.send_task('quickbooks.tasks.process_item', [item], queue='soc_accounting')
     del(qb)
 

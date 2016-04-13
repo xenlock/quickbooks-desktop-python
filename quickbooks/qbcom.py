@@ -1,11 +1,14 @@
-'Convenience classes for interacting with QuickBooks via win32com'
+# coding=utf-8
+from __future__ import unicode_literals
+
 from collections import OrderedDict
 import datetime
+import uuid
+
 from win32com.client import Dispatch, constants
 from win32com.client.makepy import GenerateFromTypeLibSpec
 from pythoncom import CoInitialize
 from pywintypes import com_error
-import uuid
 
 from .exceptions import QuickBooksError
 from .qbxml import format_request, parse_response
@@ -105,14 +108,20 @@ class QuickBooks(object):
                         verified_pos.append(purchase_order)
 	return verified_pos
 
-    def get_items(self):
-        response = self.call('ItemQueryRq')
+    def get_items(self, request_args=None, initial=False):
+        if not initial and not request_args:
+            start_date = datetime.date.today() - datetime.timedelta(days=30)
+            request_args = OrderedDict([('FromModifiedDate', str(start_date)),])
+        response = self.call('ItemQueryRq', request_dictionary=request_args)
         # remove unnecessary nesting
         items = response['ItemQueryRs']
         keys = [key for key in items.keys() if 'Item' in key]
 
         for category in keys:
-            for item in items[category]:
+            entry = items[category]
+            if not isinstance(entry, list):
+                entry = [entry]
+            for item in entry:
                 item['category'] = category
                 yield item
 
