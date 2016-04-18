@@ -73,7 +73,7 @@ class QuickBooks(object):
         response = self.request_processor.ProcessRequest(self.session, request)
         return parse_response(request_type, response)
 
-    def get_open_purchase_orders(self, start_date=None):
+    def get_purchase_orders(self, start_date=None):
         request_args = [('IncludeLineItems', '1')]
         if start_date:
             request_args = [('ModifiedDateRangeFilter', {'FromModifiedDate': str(start_date)})] + request_args
@@ -82,7 +82,7 @@ class QuickBooks(object):
         # remove unnecessary nesting
         purchase_orders = response['PurchaseOrderQueryRs']['PurchaseOrderRet']
 
-	verified_pos = []
+        verified_pos = []
         for purchase_order in purchase_orders:
             def get_lines(po_line_ret):
                 if not isinstance(po_line_ret, list):
@@ -90,27 +90,31 @@ class QuickBooks(object):
                 for line in po_line_ret:
                     purchase_order['po_lines'].append(line)
                            
-            # don't grab closed purchase orders
-            if purchase_order.get('IsManuallyClosed') != 'true' and purchase_order.get('IsFullyReceived') != 'true':
-                # only include relevant quickbooks classes
-                if purchase_order.get('ClassRef', {}).get('FullName') in QUICKBOOKS_CLASSES:
-                    # keep purchase order line items consistent 
-		    purchase_order['po_lines'] = []
-                    get_lines(purchase_order.get('PurchaseOrderLineRet', []))
+            # only include relevant quickbooks classes
+            if purchase_order.get('ClassRef', {}).get('FullName') in QUICKBOOKS_CLASSES:
+                # keep purchase order line items consistent 
+                purchase_order['po_lines'] = []
+                get_lines(purchase_order.get('PurchaseOrderLineRet', []))
 
-                    po_line_groups = purchase_order.get('PurchaseOrderLineGroupRet', {})
-                    if not isinstance(po_line_groups, list):
-                        po_line_groups = [po_line_groups]
-                    for group in po_line_groups: 
-                        get_lines(group.get('PurchaseOrderLineRet', []))
+                po_line_groups = purchase_order.get('PurchaseOrderLineGroupRet', {})
+                if not isinstance(po_line_groups, list):
+                    po_line_groups = [po_line_groups]
+                for group in po_line_groups: 
+                    get_lines(group.get('PurchaseOrderLineRet', []))
+
+                # don't grab closed purchase orders if no start date
+                if not start_date:
+                    if purchase_order.get('IsManuallyClosed') == 'true' or purchase_order.get('IsFullyReceived') == 'true':
+                        purchase_order['po_lines'] = []
 		    
-		    if purchase_order['po_lines']:
-                        verified_pos.append(purchase_order)
-	return verified_pos
+            if purchase_order.get('po_lines'):
+                verified_pos.append(purchase_order)
+        return verified_pos
 
-    def get_items(self, request_args=None, initial=False):
+    def get_items(self, request_args=None, initial=False, days=None):
         if not initial and not request_args:
-            start_date = datetime.date.today() - datetime.timedelta(days=30)
+            td = days if days else 30
+            start_date = datetime.date.today() - datetime.timedelta(days=td)
             request_args = OrderedDict([('FromModifiedDate', str(start_date)),])
         response = self.call('ItemQueryRq', request_dictionary=request_args)
         # remove unnecessary nesting

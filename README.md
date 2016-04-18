@@ -17,7 +17,7 @@ http://stackoverflow.com/questions/1455592/python-code-does-not-work-as-expected
 
 ```
 starting app on windows:
-celery worker -A tasks -Q quickbooks --loglevel=info --pool=solo
+celery worker -A tasks -Q qb_desktop --loglevel=info --pool=solo
 
 ```
 
@@ -26,7 +26,7 @@ Occasionally Quickbooks will throw an uncoverable error with a prompt that must 
 to purge the queue:
 
 ```
-celery -A tasks amqp queue.purge quickbooks
+celery -A tasks amqp queue.purge qb_desktop
 
 ```
 Be sure to set --pool=solo when running working on windows. Seems to be an issue:

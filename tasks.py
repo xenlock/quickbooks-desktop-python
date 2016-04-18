@@ -4,8 +4,7 @@ from collections import OrderedDict
 import datetime
 import json
 
-from celery_app import celery_app
-from config import QB_LOOKUP
+from config import api, celery_app, QB_LOOKUP
 from celery.utils.log import get_task_logger
 
 from quickbooks import QuickBooks
@@ -15,7 +14,7 @@ logger = get_task_logger(__name__)
 
 
 @celery_app.task(name='qb_desktop.tasks.qb_requests', track_started=True, max_retries=5)
-def qb_requests(request_list=None, initial=False, with_sides=True, app='quickbooks'):
+def qb_requests(request_list=None, initial=False, with_sides=True, app='quickbooks', days=10):
     """
     Always send a list of requests so we aren't opening and closing file more than necessary
     ex: 
@@ -34,6 +33,7 @@ def qb_requests(request_list=None, initial=False, with_sides=True, app='quickboo
     """
     qb = QuickBooks(**QB_LOOKUP)
     qb.begin_session()
+    api._discover()
 
     # process request list if it exists or just get open purchase orders
     if request_list:
@@ -43,7 +43,9 @@ def qb_requests(request_list=None, initial=False, with_sides=True, app='quickboo
                 request_type, request_dict = request_body
                 response = qb.call(request_type, request_dictionary=request_dict)
                 if surrogate_key and request_dict:
-                    celery_app.send_task('quickbooks.tasks.process_response', [surrogate_key, model_name, response, app], queue='soc_accounting')
+                    api.quickbooks.quickbooks.tasks.process_response.apply_async(
+                        args=[surrogate_key, model_name, response, app], expires=1800
+                    )
             except Exception as e:
                 logger.error(e)
 
@@ -51,24 +53,27 @@ def qb_requests(request_list=None, initial=False, with_sides=True, app='quickboo
         if initial:
             start_date = None
         else:
-            start_date = datetime.date.today() - datetime.timedelta(days=90)
+            start_date = datetime.date.today() - datetime.timedelta(days=days)
 
-        for purchase_order in qb.get_open_purchase_orders(start_date=start_date):
-            celery_app.send_task('quickbooks.tasks.process_purchase_order', [purchase_order], queue='soc_accounting')
+        for purchase_order in qb.get_purchase_orders(start_date=start_date):
+            api.quickbooks.quickbooks.tasks.process_purchase_order.apply_async(
+                args=[purchase_order], expires=1800
+            )
 
     # making sure to end session and close file
     del(qb)
 
 
 @celery_app.task(name='qb_desktop.tasks.get_items', track_started=True, max_retries=5)
-def get_items(initial=False):
+def get_items(initial=False, days=None):
     """
     this task takes no arguments and just grabs every item in Quickbooks and sends a task to process the response for each item.  I will likely be adding argument for item type in the future.
     """
+    api._discover()
     qb = QuickBooks(**QB_LOOKUP)
     qb.begin_session()
-    for item in qb.get_items(initial=initial):
-        celery_app.send_task('quickbooks.tasks.process_item', [item], queue='soc_accounting')
+    for item in qb.get_items(initial=initial, days=days):
+        api.quickbooks.quickbooks.tasks.process_item.apply_async(args=[item], expires=1800)
     del(qb)
 
 
