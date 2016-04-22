@@ -1,9 +1,15 @@
 from __future__ import absolute_import
 
 import json
+import os
+
+from kombu import Exchange, Queue
 
 
-with open("settings.json") as fin:
+fn = os.path.join(os.path.dirname(__file__), 'settings.json')
+
+
+with open(fn) as fin:
     SETTINGS = json.loads(fin.read())
 
 
@@ -14,15 +20,48 @@ QB_LOOKUP = {
 
 
 # Celery
+
+
+QUICKBOOKS_QUEUE_TASKS = [
+    'quickbooks.tasks.post_purchase_orders_to_snapfulfil',
+    'quickbooks.tasks.process_item',
+    'quickbooks.tasks.process_purchase_order',
+    'quickbooks.tasks.process_response',
+]
+
+
+class QuickbooksRouter(object):
+    def route_for_task(self, task, args=None, kwargs=None):
+        if task in QUICKBOOKS_QUEUE_TASKS:
+            return {
+                'queue': 'quickbooks',
+            }
+        else:
+            return
+
+
+default_exchange = Exchange('qb_desktop', type='direct')
+quickbooks_exchange = Exchange('quickbooks', type='direct')
+CELERY_QUEUES = (
+    Queue('qb_desktop', default_exchange, routing_key='qb_desktop'),
+    Queue('quickbooks', quickbooks_exchange, routing_key='quickbooks'),
+)
+CELERY_DEFAULT_EXCHANGE = default_exchange
+CELERY_DEFAULT_EXCHANGE_TYPE = 'direct'
+CELERY_DEFAULT_ROUTING_KEY = 'qb_desktop'
+CELERY_DEFAULT_QUEUE = 'qb_desktop'
+CELERY_ROUTES = (QuickbooksRouter(),)
+
+CELERY_CREATE_MISSING_QUEUES = False
 CELERY_ACCEPT_CONTENT = ['pickle', 'json']
 BROKER_URL = SETTINGS.get('broker')
 CELERY_RESULT_BACKEND = SETTINGS.get('backend')
 CELERY_ENABLE_UTC = True
-CELERY_DEFAULT_QUEUE = 'quickbooks'
+CELERY_TASK_RESULT_EXPIRES = 7200
+CELERY_DEFAULT_QUEUE = 'qb_desktop'
 CELERYD_HIJACK_ROOT_LOGGER = False
 IGNORE_RESULT = False
 CELERY_ALWAYS_EAGER = False
-
 
 LOGGING = {
     'version': 1,

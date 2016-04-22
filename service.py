@@ -25,10 +25,9 @@ class QBService(win32serviceutil.ServiceFramework):
         # start celery worker
         os.chdir(BASE_PATH)
         self.process = subprocess.Popen(
-            "celery worker -A tasks -Q quickbooks -f {} --loglevel=info --pool=solo".format(
-                os.path.join(BASE_PATH, 'celery.log')
-            )
+            "celery worker -A tasks -Q qb_desktop --loglevel=info --pool=solo"
         )
+        self.process.communicate()
         win32event.WaitForSingleObject(self.hWaitStop, win32event.INFINITE)
 
     def SvcStop(self):
