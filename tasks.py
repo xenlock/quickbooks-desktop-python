@@ -5,6 +5,7 @@ import datetime
 import json
 
 from config import api, celery_app, QB_LOOKUP
+from celery import chord
 from celery.utils.log import get_task_logger
 
 from quickbooks import QuickBooks
@@ -14,7 +15,7 @@ logger = get_task_logger(__name__)
 
 
 @celery_app.task(name='qb_desktop.tasks.qb_requests', track_started=True, max_retries=5)
-def qb_requests(request_list=None, initial=False, with_sides=True, app='quickbooks', days=10):
+def qb_requests(request_list=None, initial=False, with_sides=True, app='quickbooks', days=5):
     """
     Always send a list of requests so we aren't opening and closing file more than necessary
     ex: 
@@ -50,15 +51,12 @@ def qb_requests(request_list=None, initial=False, with_sides=True, app='quickboo
                 logger.error(e)
 
     if with_sides:
-        if initial:
-            start_date = None
-        else:
-            start_date = datetime.date.today() - datetime.timedelta(days=days)
-
-        for purchase_order in qb.get_purchase_orders(start_date=start_date):
-            api.quickbooks.quickbooks.tasks.process_purchase_order.apply_async(
-                args=[purchase_order], expires=1800
-            )
+        # process all appropriate purchase orders with soc_accounting and
+        # post all unposted purchase orders to snapfulfil once these are finished processing
+        pos = chord((
+            api.quickbooks.quickbooks.tasks.process_purchase_order.s(purchase_order)
+            for purchase_order in qb.get_purchase_orders(days=days)
+        ), api.quickbooks.quickbooks.tasks.post_purchase_orders_to_snapfulfil.si()).apply_async(expires=1800)
 
     # making sure to end session and close file
     del(qb)

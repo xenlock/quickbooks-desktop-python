@@ -73,10 +73,13 @@ class QuickBooks(object):
         response = self.request_processor.ProcessRequest(self.session, request)
         return parse_response(request_type, response)
 
-    def get_purchase_orders(self, start_date=None):
+    def get_purchase_orders(self, initial=False, days=None):
         request_args = [('IncludeLineItems', '1')]
-        if start_date:
-            request_args = [('ModifiedDateRangeFilter', {'FromModifiedDate': str(start_date)})] + request_args
+        if days and not initial:
+            start_date = datetime.date.today() - datetime.timedelta(days=days)
+            request_args = [
+                ('ModifiedDateRangeFilter', {'FromModifiedDate': str(start_date)})
+            ] + request_args
 
         response = self.call('PurchaseOrderQueryRq', request_dictionary=OrderedDict(request_args))
         # remove unnecessary nesting
@@ -103,7 +106,7 @@ class QuickBooks(object):
                     get_lines(group.get('PurchaseOrderLineRet', []))
 
                 # don't grab closed purchase orders if no start date
-                if not start_date:
+                if not days:
                     if purchase_order.get('IsManuallyClosed') == 'true' or purchase_order.get('IsFullyReceived') == 'true':
                         purchase_order['po_lines'] = []
 		    
