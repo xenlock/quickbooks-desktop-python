@@ -132,3 +132,26 @@ class QuickBooks(object):
                 item['category'] = category
                 yield item
 
+    def get_checks(self, request_args=None, initial=False, days=None):
+        if not initial and not request_args:
+            td = days if days else 30
+            start_date = datetime.date.today() - datetime.timedelta(days=td)
+            request_args = [
+                ('AccountFilter', {'FullName': 'SOC Distributor Bonus Account:SOC Bonus Uncleared'}),
+                ('IncludeLineItems', '1'),
+            ]
+            if days and not initial:
+                request_args = [
+                    ('ModifiedDateRangeFilter', {'FromModifiedDate': str(start_date)})
+                ] + request_args
+        request_args = OrderedDict(request_args)
+
+        # retrieve uncleared checks
+        response = self.call('CheckQueryRq', request_dictionary=request_args)
+        uncleared_checks = response['CheckQueryRs'].get('CheckRet', [])
+        if not isinstance(uncleared_checks, list):
+            uncleared_checks = [uncleared_checks]
+
+        # return all checks
+        return uncleared_checks
+
