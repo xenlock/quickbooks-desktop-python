@@ -14,7 +14,7 @@ logger = get_task_logger(__name__)
 
 
 @celery_app.task(name='qb_desktop.tasks.qb_requests', track_started=True, max_retries=5)
-def qb_requests(request_list=None, initial=False, with_sides=True, app='quickbooks', days=5):
+def qb_requests(request_list=None, initial=False, with_sides=True, app='quickbooks', days=10):
     """
     Always send a list of requests so we aren't opening and closing file more than necessary
     ex: 
@@ -71,6 +71,19 @@ def get_items(initial=False, days=None):
     qb.begin_session()
     for item in qb.get_items(initial=initial, days=days):
         api.quickbooks.quickbooks.tasks.process_item.apply_async(args=[item], expires=1800)
+    del(qb)
+
+
+@celery_app.task(name='qb_desktop.tasks.get_checks', track_started=True, max_retries=5)
+def get_checks(initial=False, days=None):
+    """
+    grab all cleared and uncleared Distributor checks
+    """
+    api._discover()
+    qb = QuickBooks(**QB_LOOKUP)
+    qb.begin_session()
+    for check in qb.get_checks(initial=initial, days=days):
+        api.quickbooks.quickbooks.tasks.process_check.apply_async(args=[check], expires=1800)
     del(qb)
 
 
