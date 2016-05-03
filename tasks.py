@@ -75,14 +75,14 @@ def get_items(initial=False, days=None):
 
 
 @celery_app.task(name='qb_desktop.tasks.get_checks', track_started=True, max_retries=5)
-def get_checks(initial=False, days=None):
+def get_checks(initial=False, days=None, account='uncleared'):
     """
     grab all cleared and uncleared Distributor checks
     """
     api._discover()
     qb = QuickBooks(**QB_LOOKUP)
     qb.begin_session()
-    for check in qb.get_checks(initial=initial, days=days):
+    for check in qb.get_checks(initial=initial, days=days, account=account):
         api.quickbooks.quickbooks.tasks.process_check.apply_async(args=[check], expires=1800)
     del(qb)
 

@@ -132,12 +132,17 @@ class QuickBooks(object):
                 item['category'] = category
                 yield item
 
-    def get_checks(self, request_args=None, initial=False, days=None):
-        if not initial and not request_args:
+    def get_checks(self, request_args=None, initial=False, days=None, account='uncleared'):
+        accounts = {
+            'uncleared': 'SOC Distributor Bonus Account:SOC Bonus Uncleared',
+            'cleared': 'SOC Distributor Bonus Account:SOC Bonus Cleared',
+        }
+        account = accounts.get(account)
+        if not request_args:
             td = days if days else 30
             start_date = datetime.date.today() - datetime.timedelta(days=td)
             request_args = [
-                ('AccountFilter', {'FullName': 'SOC Distributor Bonus Account:SOC Bonus Uncleared'}),
+                ('AccountFilter', {'FullName': account}),
                 ('IncludeLineItems', '1'),
             ]
             if days and not initial:
