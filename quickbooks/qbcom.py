@@ -83,7 +83,7 @@ class QuickBooks(object):
 
         response = self.call('PurchaseOrderQueryRq', request_dictionary=OrderedDict(request_args))
         # remove unnecessary nesting
-        purchase_orders = response['PurchaseOrderQueryRs']['PurchaseOrderRet']
+        purchase_orders = response.get('PurchaseOrderQueryRs', {}).get('PurchaseOrderRet', {})
 
         verified_pos = []
         for purchase_order in purchase_orders:
@@ -159,4 +159,9 @@ class QuickBooks(object):
 
         # return all checks
         return uncleared_checks
+
+    def get_preferences(self):
+        response = self.call('PreferencesQueryRq')
+        preferences = response.get('PreferencesQueryRs', {}).get('PreferencesRet', {})
+        return [(i, dict(preferences[i])) for i in preferences]
 

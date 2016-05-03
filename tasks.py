@@ -57,6 +57,9 @@ def qb_requests(request_list=None, initial=False, with_sides=True, app='quickboo
                 args=[purchase_order], expires=1800
             )
     api.quickbooks.quickbooks.tasks.post_purchase_orders_to_snapfulfil.apply_async(expires=1800)
+    api.quickbooks.quickbooks.tasks.process_preferences.apply_async(
+                args=[qb.get_preferences()], expires=1800
+    )
     # making sure to end session and close file
     del(qb)
 
