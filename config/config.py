@@ -26,6 +26,7 @@ QUICKBOOKS_QUEUE_TASKS = [
     'quickbooks.tasks.post_purchase_orders_to_snapfulfil',
     'quickbooks.tasks.process_check',
     'quickbooks.tasks.process_item',
+    'quickbooks.tasks.process_preferences',
     'quickbooks.tasks.process_purchase_order',
     'quickbooks.tasks.process_response',
 ]
