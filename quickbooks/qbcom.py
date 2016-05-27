@@ -84,6 +84,8 @@ class QuickBooks(object):
         response = self.call('PurchaseOrderQueryRq', request_dictionary=OrderedDict(request_args))
         # remove unnecessary nesting
         purchase_orders = response.get('PurchaseOrderQueryRs', {}).get('PurchaseOrderRet', {})
+        if not isinstance(purchase_orders, list):
+            purchase_orders = [purchase_orders]
 
         verified_pos = []
         for purchase_order in purchase_orders:
