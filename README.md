@@ -9,28 +9,25 @@ Most of the logic will be performed by outside project running on well behaved o
 
 http://www.imankulov.name/posts/celery-for-internal-api.html
 
-I was unable to successfully run the desktop worker as a windows service and it sounds like this is a quickbooks issue that won't be resolved.
-
-http://stackoverflow.com/questions/19511835/desktop-version-quickbooks-integration-with-windows-service
-
-http://stackoverflow.com/questions/1455592/python-code-does-not-work-as-expected-when-i-run-script-as-a-windows-service
+running as a service:
+```
+    python service.py --startup=auto install
+    python service.py start
 
 ```
-starting app on windows:
-celery worker -A tasks -Q qb_desktop --loglevel=info --pool=solo
+And to remove:
 
 ```
-
-Occasionally Quickbooks will throw an uncoverable error with a prompt that must be manually acknowledged.  When this happens, acknowledge the error, stop the worker and purge the quickbooks queue as it may have been building up and start the worker again.
-
-to purge the queue:
+    python service.py stop
+    python service.py remove
 
 ```
-celery -A tasks amqp queue.purge qb_desktop
+ensure settings.json is setup correctly and that the logon is a not Local System account.
+This will throw an error when attempting to open the quickbooks file on a machine where somebody is logged into quickbooks.
+This is a known issue:
 
-```
-Be sure to set --pool=solo when running working on windows. Seems to be an issue:
-http://stackoverflow.com/questions/25495613/celery-getting-started-not-able-to-retrieve-results-always-pending
+http://support.flexquarters.com/esupport/index.php?/Knowledgebase/Article/View/2529/45/qb-begin-session-failed-error--80040408-could-not-start-quickbooks
+
 
 ## Requirements
 - QuickBooks desktop application

@@ -2,12 +2,15 @@
 from __future__ import unicode_literals
 
 from collections import OrderedDict
+import csv
+import ctypes
 import datetime
+import os
 import uuid
 
-from win32com.client import Dispatch, constants
+import win32api
+from win32com.client import DispatchEx, constants
 from win32com.client.makepy import GenerateFromTypeLibSpec
-from pythoncom import CoInitialize
 from pywintypes import com_error
 
 from .exceptions import QuickBooksError
@@ -34,29 +37,38 @@ class QuickBooks(object):
         self.connection_type = connection_type
 
     def begin_session(self):
-        CoInitialize() # Needed in case we are running in a separate thread
         try:
-            self.request_processor = Dispatch('QBXMLRP2.RequestProcessor')
+            self.request_processor = DispatchEx('QBXMLRP2.RequestProcessor')
         except com_error, error:
             raise QuickBooksError('Could not access QuickBooks COM interface: %s' % error)
 
         try:
-            self.request_processor.OpenConnection2(
+            self.oc2 = self.request_processor.OpenConnection2(
                 self.application_id, self.application_name, self.connection_type
-                )
+            )
             self.session = self.request_processor.BeginSession(
-                self.company_file_name, constants.qbFileOpenDoNotCare
-                )
+                self.company_file_name, constants.qbFileOpenMultiUser
+            )
         except com_error, error:
             raise QuickBooksError('Could not start QuickBooks COM interface: %s' % error)
 
     def __del__(self):
         'Disconnect'
-        try:
-            self.request_processor.EndSession(self.session)
-            self.request_processor.CloseConnection()
-        except:
-            pass
+        self.request_processor.EndSession(self.session)
+        self.request_processor.CloseConnection()
+        self.close_by_force()
+
+    def close_by_force(self):
+        rows = os.popen('tasklist /FO CSV').readlines()
+        pids = [i for i in csv.DictReader(rows)]
+
+        for i in pids:
+            if i['Session Name'] == 'Services' and i['Image Name'] in ['qbupdate.exe', 'QBW32.EXE']:
+                # Kill the process using pywin32
+                PROCESS_TERMINATE = 1
+                handle = ctypes.windll.kernel32.OpenProcess(PROCESS_TERMINATE, False, int(i['PID']))
+                ctypes.windll.kernel32.TerminateProcess(handle, -1)
+                ctypes.windll.kernel32.CloseHandle(handle)
 
     def format_request(self, request_type, request_dictionary=None, qbxml_version='13.0', onError='stopOnError', saveXML=False):
         def save_timestamp(name, content):

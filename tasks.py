@@ -14,7 +14,7 @@ logger = get_task_logger(__name__)
 
 
 @celery_app.task(name='qb_desktop.tasks.qb_requests', track_started=True, max_retries=5)
-def qb_requests(request_list=None, initial=False, with_sides=True, app='quickbooks', days=10):
+def qb_requests(request_list=None, initial=False, with_sides=True, app='quickbooks', days=90):
     """
     Always send a list of requests so we aren't opening and closing file more than necessary
     ex: 
