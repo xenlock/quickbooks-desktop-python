@@ -18,6 +18,14 @@ Edit the service Log On properties in the windows services manager.
 ensure settings.json is setup correctly and that the logon is a not Local System account.
 Also, when running on Windows 7, 8 or Vista, ensure that UAC is turned on.  For whatever reason there will be issues if it isn't
 
+ And to remove:
+ 
+ ```
+     python service.py remove
+ 
+ ```
+
+
 https://community.intuit.com/articles/1019738-turn-user-account-control-uac-on-and-off-in-windows-8-7-or-vista
 
 ## Requirements
