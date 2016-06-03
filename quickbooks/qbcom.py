@@ -26,6 +26,7 @@ GenerateFromTypeLibSpec('QBXMLRP2 1.0 Type Library')
 # Quickbook's classes are like categories for transactions
 QUICKBOOKS_CLASSES = ["Gifting"]
 
+
 class QuickBooks(object):
     'Wrapper for the QuickBooks RequestProcessor COM interface'
 

@@ -12,22 +12,13 @@ http://www.imankulov.name/posts/celery-for-internal-api.html
 running as a service:
 ```
     python service.py --startup=auto install
-    python service.py start
 
 ```
-And to remove:
-
-```
-    python service.py stop
-    python service.py remove
-
-```
+Edit the service Log On properties in the windows services manager.
 ensure settings.json is setup correctly and that the logon is a not Local System account.
-This will throw an error when attempting to open the quickbooks file on a machine where somebody is logged into quickbooks.
-This is a known issue:
+Also, when running on Windows 7, 8 or Vista, ensure that UAC is turned on.  For whatever reason there will be issues if it isn't
 
-http://support.flexquarters.com/esupport/index.php?/Knowledgebase/Article/View/2529/45/qb-begin-session-failed-error--80040408-could-not-start-quickbooks
-
+https://community.intuit.com/articles/1019738-turn-user-account-control-uac-on-and-off-in-windows-8-7-or-vista
 
 ## Requirements
 - QuickBooks desktop application
