@@ -8,10 +8,11 @@ import datetime
 import os
 import uuid
 
-import win32api
-from win32com.client import DispatchEx, constants
-from win32com.client.makepy import GenerateFromTypeLibSpec
+from pythoncom import CoInitialize
 from pywintypes import com_error
+import win32api
+from win32com.client import Dispatch, constants
+from win32com.client.makepy import GenerateFromTypeLibSpec
 
 from .exceptions import QuickBooksError
 from .qbxml import format_request, parse_response
@@ -38,17 +39,18 @@ class QuickBooks(object):
         self.connection_type = connection_type
 
     def begin_session(self):
+        CoInitialize()
         try:
-            self.request_processor = DispatchEx('QBXMLRP2.RequestProcessor')
+            self.request_processor = Dispatch('QBXMLRP2.RequestProcessor')
         except com_error, error:
             raise QuickBooksError('Could not access QuickBooks COM interface: %s' % error)
 
         try:
-            self.oc2 = self.request_processor.OpenConnection2(
+            self.request_processor.OpenConnection2(
                 self.application_id, self.application_name, self.connection_type
             )
             self.session = self.request_processor.BeginSession(
-                self.company_file_name, constants.qbFileOpenMultiUser
+                self.company_file_name, constants.qbFileOpenDoNotCare
             )
         except com_error, error:
             raise QuickBooksError('Could not start QuickBooks COM interface: %s' % error)
