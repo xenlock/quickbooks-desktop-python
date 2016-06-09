@@ -5,9 +5,7 @@ It appears to be abandoned for good reason.  I think most of the planet has move
 Looking to utilize the qbcom and qbxml modules.
 
 Implementing using celery worker running on a windows machine using activestate active python installation listed below for com module.
-Most of the logic will be performed by outside project running on well behaved operating systems.  Inspired by the following article:
-
-http://www.imankulov.name/posts/celery-for-internal-api.html
+Most of the logic will be performed by outside project running on well behaved operating systems.  
 
 running as a service:
 ```
@@ -24,7 +22,6 @@ Also, when running on Windows 7, 8 or Vista, ensure that UAC is turned on.  For 
      python service.py remove
  
  ```
-
 
 https://community.intuit.com/articles/1019738-turn-user-account-control-uac-on-and-off-in-windows-8-7-or-vista
 

@@ -4,7 +4,7 @@ from collections import OrderedDict
 import datetime
 import json
 
-from config import api, celery_app, QB_LOOKUP
+from config import celery_app, QB_LOOKUP
 from celery.utils.log import get_task_logger
 
 from quickbooks import QuickBooks
@@ -33,7 +33,6 @@ def qb_requests(request_list=None, initial=False, with_sides=True, app='quickboo
     """
     qb = QuickBooks(**QB_LOOKUP)
     qb.begin_session()
-    api._discover()
 
     # process request list if it exists or just get open purchase orders
     if request_list:
@@ -43,7 +42,9 @@ def qb_requests(request_list=None, initial=False, with_sides=True, app='quickboo
                 request_type, request_dict = request_body
                 response = qb.call(request_type, request_dictionary=request_dict)
                 if surrogate_key and request_dict:
-                    api.quickbooks.quickbooks.tasks.process_response.apply_async(
+                    celery_app.send_task(
+                        'quickbooks.tasks.process_response',
+                        queue='quickbooks',
                         args=[surrogate_key, model_name, response, app], expires=1800
                     )
             except Exception as e:
@@ -53,12 +54,20 @@ def qb_requests(request_list=None, initial=False, with_sides=True, app='quickboo
         # process all appropriate purchase orders with soc_accounting and
         # post all unposted purchase orders to snapfulfil once these are finished processing
         for purchase_order in qb.get_purchase_orders(days=days):
-            api.quickbooks.quickbooks.tasks.process_purchase_order.apply_async(
+            celery_app.send_task(
+                'quickbooks.tasks.process_purchase_order',
+                queue='quickbooks',
                 args=[purchase_order], expires=1800
             )
-    api.quickbooks.quickbooks.tasks.post_purchase_orders_to_snapfulfil.apply_async(expires=1800)
-    api.quickbooks.quickbooks.tasks.process_preferences.apply_async(
-                args=[qb.get_preferences()], expires=1800
+    celery_app.send_task(
+        'quickbooks.tasks.post_purchase_orders_to_snapfulfil',
+        queue='quickbooks',
+        expires=1800
+    )
+    celery_app.send_task(
+            'quickbooks.tasks.process_preferences',
+            queue='quickbooks',
+            args=[qb.get_preferences()], expires=1800
     )
     # making sure to end session and close file
     del(qb)
@@ -69,11 +78,14 @@ def get_items(initial=False, days=3):
     """
     this task takes no arguments and just grabs every item in Quickbooks and sends a task to process the response for each item.  I will likely be adding argument for item type in the future.
     """
-    api._discover()
     qb = QuickBooks(**QB_LOOKUP)
     qb.begin_session()
     for item in qb.get_items(initial=initial, days=days):
-        api.quickbooks.quickbooks.tasks.process_item.apply_async(args=[item], expires=1800)
+        celery_app.send_task(
+            'quickbooks.tasks.process_item',
+            queue='quickbooks',
+            args=[item], expires=1800
+        )
     del(qb)
 
 
@@ -82,11 +94,14 @@ def get_checks(initial=False, days=3, account='uncleared'):
     """
     grab all cleared and uncleared Distributor checks
     """
-    api._discover()
     qb = QuickBooks(**QB_LOOKUP)
     qb.begin_session()
     for check in qb.get_checks(initial=initial, days=days, account=account):
-        api.quickbooks.quickbooks.tasks.process_check.apply_async(args=[check], expires=1800)
+        celery_app.send_task(
+            'quickbooks.tasks.process_check',
+            queue='quickbooks',
+            args=[check], expires=1800
+        )
     del(qb)
 
 
