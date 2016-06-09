@@ -14,7 +14,7 @@ logger = get_task_logger(__name__)
 
 
 @celery_app.task(name='qb_desktop.tasks.qb_requests', track_started=True, max_retries=5)
-def qb_requests(request_list=None, initial=False, with_sides=True, app='quickbooks', days=30):
+def qb_requests(request_list=None, initial=False, with_sides=True, app='quickbooks', days=3):
     """
     Always send a list of requests so we aren't opening and closing file more than necessary
     ex: 
@@ -65,7 +65,7 @@ def qb_requests(request_list=None, initial=False, with_sides=True, app='quickboo
 
 
 @celery_app.task(name='qb_desktop.tasks.get_items', track_started=True, max_retries=5)
-def get_items(initial=False, days=None):
+def get_items(initial=False, days=3):
     """
     this task takes no arguments and just grabs every item in Quickbooks and sends a task to process the response for each item.  I will likely be adding argument for item type in the future.
     """
@@ -78,7 +78,7 @@ def get_items(initial=False, days=None):
 
 
 @celery_app.task(name='qb_desktop.tasks.get_checks', track_started=True, max_retries=5)
-def get_checks(initial=False, days=None, account='uncleared'):
+def get_checks(initial=False, days=3, account='uncleared'):
     """
     grab all cleared and uncleared Distributor checks
     """
