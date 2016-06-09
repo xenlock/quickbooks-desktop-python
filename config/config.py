@@ -19,28 +19,6 @@ QB_LOOKUP = {
 }
 
 
-# Celery
-
-
-QUICKBOOKS_QUEUE_TASKS = [
-    'quickbooks.tasks.post_purchase_orders_to_snapfulfil',
-    'quickbooks.tasks.process_check',
-    'quickbooks.tasks.process_item',
-    'quickbooks.tasks.process_preferences',
-    'quickbooks.tasks.process_purchase_order',
-    'quickbooks.tasks.process_response',
-]
-
-
-class QuickbooksRouter(object):
-    def route_for_task(self, task, args=None, kwargs=None):
-        if task in QUICKBOOKS_QUEUE_TASKS:
-            return {
-                'queue': 'quickbooks',
-            }
-        else:
-            return
-
 
 default_exchange = Exchange('qb_desktop', type='direct')
 quickbooks_exchange = Exchange('quickbooks', type='direct')
@@ -52,8 +30,6 @@ CELERY_DEFAULT_EXCHANGE = default_exchange
 CELERY_DEFAULT_EXCHANGE_TYPE = 'direct'
 CELERY_DEFAULT_ROUTING_KEY = 'qb_desktop'
 CELERY_DEFAULT_QUEUE = 'qb_desktop'
-CELERY_ROUTES = (QuickbooksRouter(),)
-
 CELERY_CREATE_MISSING_QUEUES = False
 CELERY_ACCEPT_CONTENT = ['pickle', 'json']
 BROKER_URL = SETTINGS.get('broker')
