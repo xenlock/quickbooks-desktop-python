@@ -31,11 +31,12 @@ QUICKBOOKS_CLASSES = ["Gifting"]
 class QuickBooks(object):
     'Wrapper for the QuickBooks RequestProcessor COM interface'
 
-    def __init__(self, application_id='', application_name='Example', company_file_name='', connection_type=constants.localQBD):
+    def __init__(self, application_id='', application_name='Example', company_file_name='', service_user=None, connection_type=constants.localQBD):
         'Connect'
         self.application_id = application_id
         self.application_name = application_name
         self.company_file_name = company_file_name
+        self.service_user = service_user
         self.connection_type = connection_type
 
     def begin_session(self):
@@ -62,11 +63,11 @@ class QuickBooks(object):
         self.close_by_force()
 
     def close_by_force(self):
-        rows = os.popen('tasklist /FO CSV').readlines()
+        rows = os.popen('tasklist /V /FO CSV').readlines()
         pids = [i for i in csv.DictReader(rows)]
 
         for i in pids:
-            if i['Session Name'] == 'Services' and i['Image Name'] in ['qbupdate.exe', 'QBW32.EXE']:
+            if i['User Name'].endswith(self.service_user) and i['Image Name'] in ['qbupdate.exe', 'QBW32.EXE']:
                 # Kill the process using pywin32
                 PROCESS_TERMINATE = 1
                 handle = ctypes.windll.kernel32.OpenProcess(PROCESS_TERMINATE, False, int(i['PID']))

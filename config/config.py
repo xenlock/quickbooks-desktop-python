@@ -15,7 +15,8 @@ with open(fn) as fin:
 
 QB_LOOKUP = {
     'application_name': SETTINGS.get(u'qb_application_name'),
-    'company_file_name': SETTINGS.get(u'qb_file_location')
+    'company_file_name': SETTINGS.get(u'qb_file_location'),
+    'service_user': SETTINGS.get(u'service_user'),
 }
 
 
