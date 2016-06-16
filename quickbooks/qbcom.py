@@ -40,6 +40,8 @@ class QuickBooks(object):
         self.connection_type = connection_type
 
     def begin_session(self):
+        # force close any previous qb sessions if they are still open
+        self.close_by_force()
         CoInitialize()
         try:
             self.request_processor = Dispatch('QBXMLRP2.RequestProcessor')
@@ -54,9 +56,14 @@ class QuickBooks(object):
                 self.company_file_name, constants.qbFileOpenDoNotCare
             )
         except com_error, error:
+            self.close_by_force()
             raise QuickBooksError('Could not start QuickBooks COM interface: %s' % error)
 
     def __del__(self):
+        'Disconnect'
+        self.end_session()
+
+    def end_session(self):
         'Disconnect'
         self.request_processor.EndSession(self.session)
         self.request_processor.CloseConnection()

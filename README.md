@@ -33,6 +33,9 @@ https://community.intuit.com/articles/1019738-turn-user-account-control-uac-on-a
 
 ## Tasks
 
+### clearing the queue
+celery -A tasks amqp queue.purge qb_desktop
+
 ### qb_requests:
 
 We always send a list of requests so we aren't opening and closing file more than necessary
