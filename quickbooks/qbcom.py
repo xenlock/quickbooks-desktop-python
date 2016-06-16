@@ -40,15 +40,9 @@ class QuickBooks(object):
         self.connection_type = connection_type
 
     def begin_session(self):
-        # force close any previous qb sessions if they are still open
-        self.close_by_force()
-        CoInitialize()
         try:
+            CoInitialize()
             self.request_processor = Dispatch('QBXMLRP2.RequestProcessor')
-        except com_error, error:
-            raise QuickBooksError('Could not access QuickBooks COM interface: %s' % error)
-
-        try:
             self.request_processor.OpenConnection2(
                 self.application_id, self.application_name, self.connection_type
             )

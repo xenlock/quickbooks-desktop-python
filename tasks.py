@@ -7,7 +7,7 @@ import json
 from config import celery_app, QB_LOOKUP
 from celery.utils.log import get_task_logger
 
-from quickbooks import QuickBooks
+from quickbooks import QuickBooks, QuickBooksError
 
 
 logger = get_task_logger(__name__)
