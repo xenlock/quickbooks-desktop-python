@@ -84,23 +84,23 @@ def get_items(initial=False, days=3):
         celery_app.send_task(
             'quickbooks.tasks.process_item',
             queue='quickbooks',
-            args=[item], expires=1800
+            args=[item], expires=3600
         )
     del(qb)
 
 
 @celery_app.task(name='qb_desktop.tasks.get_checks', track_started=True, max_retries=5)
-def get_checks(initial=False, days=3, account='uncleared'):
+def get_checks(initial=False, days=5, accounts=['uncleared', 'cleared']):
     """
     grab all cleared and uncleared Distributor checks
     """
     qb = QuickBooks(**QB_LOOKUP)
     qb.begin_session()
-    for check in qb.get_checks(initial=initial, days=days, account=account):
+    for check in qb.get_checks(initial=initial, days=days, accounts=accounts):
         celery_app.send_task(
             'quickbooks.tasks.process_check',
             queue='quickbooks',
-            args=[check], expires=1800
+            args=[check], expires=3600
         )
     del(qb)
 

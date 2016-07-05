@@ -5,6 +5,7 @@ from collections import OrderedDict
 import csv
 import ctypes
 import datetime
+from itertools import chain
 import os
 import uuid
 
@@ -68,7 +69,8 @@ class QuickBooks(object):
         pids = [i for i in csv.DictReader(rows)]
 
         for i in pids:
-            if i['User Name'].endswith(self.service_user) and i['Image Name'] in ['qbupdate.exe', 'QBW32.EXE']:
+            user_name = i['User Name'] if i['User Name'] else ''
+            if user_name.endswith(self.service_user) and i['Image Name'] in ['qbupdate.exe', 'QBW32.EXE']:
                 # Kill the process using pywin32
                 PROCESS_TERMINATE = 1
                 handle = ctypes.windll.kernel32.OpenProcess(PROCESS_TERMINATE, False, int(i['PID']))
@@ -151,7 +153,7 @@ class QuickBooks(object):
                 item['category'] = category
                 yield item
 
-    def get_checks(self, request_args=None, initial=False, days=None, account='uncleared'):
+    def _get_checks(self, account, request_args=None, initial=False, days=None):
         accounts = {
             'uncleared': 'SOC Distributor Bonus Account:SOC Bonus Uncleared',
             'cleared': 'SOC Distributor Bonus Account:SOC Bonus Cleared',
@@ -172,12 +174,19 @@ class QuickBooks(object):
 
         # retrieve uncleared checks
         response = self.call('CheckQueryRq', request_dictionary=request_args)
-        uncleared_checks = response['CheckQueryRs'].get('CheckRet', [])
-        if not isinstance(uncleared_checks, list):
-            uncleared_checks = [uncleared_checks]
+        checks = response['CheckQueryRs'].get('CheckRet', [])
+        if not isinstance(checks, list):
+            checks = [checks]
 
         # return all checks
-        return uncleared_checks
+        return checks
+
+    def get_checks(self, request_args=None, initial=False, days=None, accounts=['uncleared', 'cleared']):
+        return chain(*(
+            self._get_checks(account, request_args, initial, days)
+            for account in accounts
+        ))
+            
 
     def get_preferences(self):
         response = self.call('PreferencesQueryRq')
