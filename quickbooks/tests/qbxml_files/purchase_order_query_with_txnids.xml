@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<?qbxml version="13.0"?>
+<QBXML>
+  <QBXMLMsgsRq onError="stopOnError">
+    <PurchaseOrderQueryRq>
+      <TxnID>46526B-1469811956</TxnID>
+      <TxnID>44B53A-1464296822</TxnID>
+      <TxnID>45A24B-1467222708</TxnID>
+      <TxnID>46D2DC-1472835223</TxnID>
+      <TxnID>466E04-1470691662</TxnID>
+      <TxnID>466522-1470326943</TxnID>
+      <TxnID>46D622-1473171639</TxnID>
+      <TxnID>46D39D-1472843278</TxnID>
+      <TxnID>47069F-1474045450</TxnID>
+      <TxnID>46E6C9-1473706489</TxnID>
+      <TxnID>46DE05-1473362163</TxnID>
+      <TxnID>471A38-1474580814</TxnID>
+      <TxnID>471219-1474393071</TxnID>
+      <IncludeLineItems>1</IncludeLineItems>
+    </PurchaseOrderQueryRq>
+  </QBXMLMsgsRq>
+</QBXML>

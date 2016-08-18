@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+<?qbxml version="13.0"?>
+<QBXML>
+  <QBXMLMsgsRq onError="stopOnError">
+    <ItemQueryRq/>
+  </QBXMLMsgsRq>
+</QBXML>

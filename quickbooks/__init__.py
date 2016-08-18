@@ -1,8 +1,4 @@
-from quickbooks.exceptions import QuickBooksError
-from quickbooks.qbcom import QuickBooks
-
-
-__all__ = [
-    'QuickBooks', 
-    'QuickBooksError',
-]
+def pluralize(something):
+    if not isinstance(something, list):
+        something = [something]
+    return something

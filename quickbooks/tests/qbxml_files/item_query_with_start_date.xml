@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<?qbxml version="13.0"?>
+<QBXML>
+  <QBXMLMsgsRq onError="stopOnError">
+    <ItemQueryRq>
+      <FromModifiedDate>2016-09-23</FromModifiedDate>
+    </ItemQueryRq>
+  </QBXMLMsgsRq>
+</QBXML>
