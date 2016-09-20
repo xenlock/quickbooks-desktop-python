@@ -60,9 +60,13 @@ class QuickBooks(object):
 
     def end_session(self):
         'Disconnect'
-        self.request_processor.EndSession(self.session)
-        self.request_processor.CloseConnection()
-        self.close_by_force()
+        try:
+            # attempt to do this correctly although it doesn't
+            self.request_processor.EndSession(self.session)
+            self.request_processor.CloseConnection()
+        finally:
+            # either way, close by force when you are finished
+            self.close_by_force()
 
     def close_by_force(self):
         rows = os.popen('tasklist /V /FO CSV').readlines()
