@@ -28,6 +28,7 @@ CELERY_QUEUES = (
     Queue('quickbooks', quickbooks_exchange, routing_key='quickbooks'),
 )
 CELERY_DEFAULT_EXCHANGE = default_exchange
+CELERYD_TASK_SOFT_TIME_LIMIT = 3600
 CELERY_DEFAULT_EXCHANGE_TYPE = 'direct'
 CELERY_DEFAULT_ROUTING_KEY = 'qb_desktop'
 CELERY_DEFAULT_QUEUE = 'qb_desktop'
