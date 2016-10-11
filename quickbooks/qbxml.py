@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from collections import OrderedDict
 import json
 import logging
-from lxml import etree as xml
+import xml.etree.ElementTree as ET
 import xmltodict
 
 from .exceptions import QuickBooksError
@@ -17,19 +17,19 @@ def format_request(request_type, request_dictionary=None, qbxmlVersion='13.0', o
     'Format request as QBXML'
     if not request_dictionary:
         request_dictionary = dict()
-    section = xml.Element(request_type)
+    section = ET.Element(request_type)
     for key, value in request_dictionary.iteritems():
         section.extend(format_request_part(key, value))
-    body = xml.Element('QBXMLMsgsRq', onError=onError)
+    body = ET.Element('QBXMLMsgsRq', onError=onError)
     body.append(section)
-    document = xml.Element('QBXML')
+    document = ET.Element('QBXML')
     document.append(body)
     elements = [
-        xml.ProcessingInstruction('xml', 'version="1.0"'),
-        xml.ProcessingInstruction('qbxml', 'version="%s"' % qbxmlVersion),
+        ET.ProcessingInstruction('xml', 'version="1.0"'),
+        ET.ProcessingInstruction('qbxml', 'version="%s"' % qbxmlVersion),
         document,
     ]
-    return ''.join(xml.tostring(x, pretty_print=True) for x in elements)
+    return ''.join(ET.tostring(x, pretty_print=True) for x in elements)
 
 
 def format_request_part(key, value):
@@ -38,7 +38,7 @@ def format_request_part(key, value):
     if isinstance(value, tuple):
         value = OrderedDict(value)
     if hasattr(value, 'iteritems'):
-        part = xml.Element(key)
+        part = ET.Element(key)
         for x, y in value.iteritems():
             part.extend(format_request_part(x, y))
         return [part]
@@ -48,14 +48,14 @@ def format_request_part(key, value):
         for valueByKey in value:
             if isinstance(valueByKey, tuple):
                 valueByKey = OrderedDict(valueByKey)
-            part = xml.Element(key)
+            part = ET.Element(key)
             for x, y in valueByKey.iteritems():
                 part.extend(format_request_part(x, y))
             parts.append(part)
         return parts
     # If value is neither a dictionary nor a list,
     else:
-        part = xml.Element(key)
+        part = ET.Element(key)
         part.text = unicode(value)
         return [part]
 
