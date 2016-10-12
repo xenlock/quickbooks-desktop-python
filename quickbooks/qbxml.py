@@ -29,7 +29,7 @@ def format_request(request_type, request_dictionary=None, qbxmlVersion='13.0', o
         ET.ProcessingInstruction('qbxml', 'version="%s"' % qbxmlVersion),
         document,
     ]
-    return ''.join(ET.tostring(x, pretty_print=True) for x in elements)
+    return ''.join(ET.tostring(x) for x in elements)
 
 
 def format_request_part(key, value):
