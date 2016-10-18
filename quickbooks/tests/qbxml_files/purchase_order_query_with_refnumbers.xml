@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<?qbxml version="13.0"?>
+<QBXML>
+  <QBXMLMsgsRq onError="stopOnError">
+    <PurchaseOrderQueryRq>
+      <RefNumber>SOC19294</RefNumber>
+      <RefNumber>SOC19230</RefNumber>
+      <RefNumber>SOC18998</RefNumber>
+      <RefNumber>SOC19039</RefNumber>
+      <RefNumber>SOC18853</RefNumber>
+      <RefNumber>SOC19200</RefNumber>
+      <RefNumber>SOC19265</RefNumber>
+      <RefNumber>SOC19313</RefNumber>
+      <RefNumber>SOC18651</RefNumber>
+      <RefNumber>SOC19204</RefNumber>
+      <RefNumber>SOC19329</RefNumber>
+      <RefNumber>SOC19062</RefNumber>
+      <RefNumber>SOC19242</RefNumber>
+      <IncludeLineItems>1</IncludeLineItems>
+    </PurchaseOrderQueryRq>
+  </QBXMLMsgsRq>
+</QBXML>

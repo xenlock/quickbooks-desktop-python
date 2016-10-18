@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+<?qbxml version="13.0"?>
+<QBXML>
+  <QBXMLMsgsRq onError="stopOnError">
+    <ItemQueryRq>
+      <ListID>80002813-1408669510</ListID>
+      <ListID>80003950-1467305266</ListID>
+      <ListID>8000380D-1459355181</ListID>
+      <ListID>80003664-1446072946</ListID>
+      <ListID>80002EDE-1426787483</ListID>
+      <ListID>8000389D-1461788397</ListID>
+      <ListID>8000389A-1461704236</ListID>
+      <ListID>8000332D-1441744420</ListID>
+      <ListID>8000389C-1461776908</ListID>
+      <ListID>80002DC8-1426540969</ListID>
+      <ListID>80003908-1464811534</ListID>
+      <ListID>80002B70-1426111477</ListID>
+      <ListID>800038C2-1462902149</ListID>
+      <ListID>8000380E-1459355198</ListID>
+      <ListID>8000380C-1459355152</ListID>
+    </ItemQueryRq>
+  </QBXMLMsgsRq>
+</QBXML>

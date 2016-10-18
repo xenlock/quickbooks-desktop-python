@@ -5,15 +5,22 @@ import datetime
 import json
 
 from config import celery_app, QB_LOOKUP
+import constants
 from celery.utils.log import get_task_logger
 
-from quickbooks import QuickBooks, QuickBooksError
+from quickbooks.exceptions import QuickBooksError
+from quickbooks.qbxml_request_formatter import CheckQueryRequest
+from quickbooks.qbcom import QuickBooks
 
 
 logger = get_task_logger(__name__)
 
 
-@celery_app.task(name='qb_desktop.tasks.qb_requests', track_started=True, max_retries=5)
+# doesn't seem to respect the CELERYD_TASK_SOFT_TIME_LIMIT setting
+SOFT_TIME_LIMIT = 3600
+
+
+@celery_app.task(name='qb_desktop.tasks.qb_requests', track_started=True, max_retries=5, soft_time_limit=SOFT_TIME_LIMIT)
 def qb_requests(request_list=None, initial=False, with_sides=True, app='quickbooks', days=3):
     """
     Always send a list of requests so we aren't opening and closing file more than necessary
@@ -51,61 +58,25 @@ def qb_requests(request_list=None, initial=False, with_sides=True, app='quickboo
                 except Exception as e:
                     logger.error(e)
 
-        if with_sides:
-            # process all appropriate purchase orders with soc_accounting and
-            # post all unposted purchase orders to snapfulfil once these are finished processing
-            for purchase_order in qb.get_purchase_orders(days=days):
-                celery_app.send_task(
-                    'quickbooks.tasks.process_purchase_order',
-                    queue='quickbooks',
-                    args=[purchase_order], expires=1800
-                )
-        celery_app.send_task(
-            'quickbooks.tasks.post_purchase_orders_to_snapfulfil',
-            queue='quickbooks',
-            expires=1800
-        )
-        celery_app.send_task(
-                'quickbooks.tasks.process_preferences',
-                queue='quickbooks',
-                args=[qb.get_preferences()], expires=1800
-        )
+    finally:
         # making sure to end session and close file
-    finally:
         del(qb)
 
 
-@celery_app.task(name='qb_desktop.tasks.get_items', track_started=True, max_retries=5)
-def get_items(initial=False, days=3):
+@celery_app.task(name='qb_desktop.tasks.quickbooks_query', track_started=True, max_retries=5, soft_time_limit=SOFT_TIME_LIMIT)
+def quickbooks_query(query_type, query_params):
     """
-    this task takes no arguments and just grabs every item in Quickbooks and sends a task to process the response for each item.  I will likely be adding argument for item type in the future.
+    args are query type string and any query_params which should be a dict
+    query types include 
+    purchase_order, item, check
     """
     try:
         qb = QuickBooks(**QB_LOOKUP)
         qb.begin_session()
-        for item in qb.get_items(initial=initial, days=days):
+        processing_task, results = qb.quickbooks_query(query_type, query_params)
+        for item in results:
             celery_app.send_task(
-                'quickbooks.tasks.process_item',
-                queue='quickbooks',
-                args=[item], expires=3600
-            )
-    finally:
-        del(qb)
-
-
-@celery_app.task(name='qb_desktop.tasks.get_checks', track_started=True, max_retries=5)
-def get_checks(initial=False, days=5, accounts=['uncleared', 'cleared']):
-    """
-    grab all cleared and uncleared Distributor checks
-    """
-    try:
-        qb = QuickBooks(**QB_LOOKUP)
-        qb.begin_session()
-        for check in qb.get_checks(initial=initial, days=days, accounts=accounts):
-            celery_app.send_task(
-                'quickbooks.tasks.process_check',
-                queue='quickbooks',
-                args=[check], expires=3600
+                processing_task, queue='quickbooks', args=[item], expires=1800
             )
     finally:
         del(qb)
@@ -127,5 +98,5 @@ def pretty_print(request_list):
     for entry in request_list:
         surrogate_key, model_name, request_body = entry
         request_type, request_dict = request_body
-        qb.format_request(request_type, request_dictionary=request_dict, saveXML=True)
+        qb.format_request(request_type, request_dictionary=request_dict, save_xml=True)
 

@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<?qbxml version="13.0"?>
+<QBXML>
+  <QBXMLMsgsRq onError="stopOnError">
+    <PurchaseOrderQueryRq>
+      <IncludeLineItems>1</IncludeLineItems>
+    </PurchaseOrderQueryRq>
+  </QBXMLMsgsRq>
+</QBXML>

@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<?qbxml version="13.0"?>
+<QBXML>
+  <QBXMLMsgsRq onError="stopOnError">
+    <CheckQueryRq>
+      <AccountFilter>
+        <FullName>SOC Distributor Bonus Account:SOC Bonus Uncleared</FullName>
+        <FullName>SOC Bonus Uncleared</FullName>
+        <FullName>SOC Distributor Bonus Account:SOC Bonus Cleared</FullName>
+      </AccountFilter>
+      <IncludeLineItems>1</IncludeLineItems>
+    </CheckQueryRq>
+  </QBXMLMsgsRq>
+</QBXML>

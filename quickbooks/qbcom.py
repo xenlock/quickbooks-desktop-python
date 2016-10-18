@@ -15,8 +15,13 @@ import win32api
 from win32com.client import Dispatch, constants
 from win32com.client.makepy import GenerateFromTypeLibSpec
 
-from .exceptions import QuickBooksError
-from .qbxml import format_request, parse_response
+from .exceptions import AdapterNotFound, QuickBooksError
+from .qbxml_serializers import format_request, parse_response
+from .qbxml_request_formatter import (
+    CheckQueryRequest,
+    ItemQueryRequest,
+    PurchaseOrderQueryRequest
+)
 
 
 # After running the following command, you can check the generated type library
@@ -25,8 +30,26 @@ from .qbxml import format_request, parse_response
 # e.g. /Python27/Lib/site-packages/win32com/gen_py/
 GenerateFromTypeLibSpec('QBXMLRP2 1.0 Type Library')
 
-# Quickbook's classes are like categories for transactions
-QUICKBOOKS_CLASSES = ["Gifting"]
+
+def save_request_xml(request_type, request):
+    now = datetime.datetime.now().strftime('%Y%m%d-%H%M%S')
+    file_name = '{}-{}{}.xml'.format(now, uuid.uuid4(), request_type)
+    with open(file_name, 'wt') as fout:
+        fout.write(request)
+
+
+def get_request_formatter(request_type, query_params):
+    adapters = {
+        'check': CheckQueryRequest,
+        'item': ItemQueryRequest,
+        'purchase_order': PurchaseOrderQueryRequest,
+    }
+    try:
+        return adapters[request_type](**query_params)
+    except KeyError:
+        raise AdapterNotFound(
+            "Adapter for {0} not found.".format(request_type)
+        )
 
 
 class QuickBooks(object):
@@ -81,116 +104,27 @@ class QuickBooks(object):
                 ctypes.windll.kernel32.TerminateProcess(handle, -1)
                 ctypes.windll.kernel32.CloseHandle(handle)
 
-    def format_request(self, request_type, request_dictionary=None, qbxml_version='13.0', onError='stopOnError', saveXML=False):
-        def save_timestamp(name, content):
-            now = datetime.datetime.now()
-            open(now.strftime('%Y%m%d-%H%M%S') + '-{}{}'.format(uuid.uuid4(), name), 'wt').write(content)
-        request = format_request(request_type, request_dictionary, qbxml_version, onError)
-        if saveXML:
-            save_timestamp('request.xml', request)
+    def format_request(self, request_type, request_dictionary=None, save_xml=False):
+        request = format_request(request_type, request_dictionary)
+        if save_xml:
+            save_request_xml(request_type, request)
         return request
 
-    def call(self, request_type, request_dictionary=None, qbxml_version='13.0', onError='stopOnError', saveXML=False):
+    def call(self, request_type, request_dictionary=None, save_xml=False):
         'Send request and parse response'
-        request = self.format_request(request_type, request_dictionary, qbxml_version, onError)
+        request = self.format_request(request_type, request_dictionary, save_xml=save_xml)
         response = self.request_processor.ProcessRequest(self.session, request)
+        if save_xml:
+            save_request_xml(request_type, response)
         return parse_response(request_type, response)
 
-    def get_purchase_orders(self, initial=False, days=None):
-        request_args = [('IncludeLineItems', '1')]
-        if days and not initial:
-            start_date = datetime.date.today() - datetime.timedelta(days=days)
-            request_args = [
-                ('ModifiedDateRangeFilter', {'FromModifiedDate': str(start_date)})
-            ] + request_args
-
-        response = self.call('PurchaseOrderQueryRq', request_dictionary=OrderedDict(request_args))
-        # remove unnecessary nesting
-        purchase_orders = response.get('PurchaseOrderQueryRs', {}).get('PurchaseOrderRet', {})
-        if not isinstance(purchase_orders, list):
-            purchase_orders = [purchase_orders]
-
-        verified_pos = []
-        for purchase_order in purchase_orders:
-            def get_lines(po_line_ret):
-                if not isinstance(po_line_ret, list):
-                    po_line_ret = [po_line_ret]
-                for line in po_line_ret:
-                    purchase_order['po_lines'].append(line)
-                           
-            # only include relevant quickbooks classes
-            if purchase_order.get('ClassRef', {}).get('FullName') in QUICKBOOKS_CLASSES:
-                # keep purchase order line items consistent 
-                purchase_order['po_lines'] = []
-                get_lines(purchase_order.get('PurchaseOrderLineRet', []))
-
-                po_line_groups = purchase_order.get('PurchaseOrderLineGroupRet', {})
-                if not isinstance(po_line_groups, list):
-                    po_line_groups = [po_line_groups]
-                for group in po_line_groups: 
-                    get_lines(group.get('PurchaseOrderLineRet', []))
-
-                # don't grab closed purchase orders if no start date
-                if not days:
-                    if purchase_order.get('IsManuallyClosed') == 'true' or purchase_order.get('IsFullyReceived') == 'true':
-                        purchase_order['po_lines'] = []
-		    
-            if purchase_order.get('po_lines'):
-                verified_pos.append(purchase_order)
-        return verified_pos
-
-    def get_items(self, request_args=None, initial=False, days=None):
-        if not initial and not request_args:
-            td = days if days else 30
-            start_date = datetime.date.today() - datetime.timedelta(days=td)
-            request_args = OrderedDict([('FromModifiedDate', str(start_date)),])
-        response = self.call('ItemQueryRq', request_dictionary=request_args)
-        # remove unnecessary nesting
-        items = response['ItemQueryRs']
-        keys = [key for key in items.keys() if 'Item' in key]
-
-        for category in keys:
-            entry = items[category]
-            if not isinstance(entry, list):
-                entry = [entry]
-            for item in entry:
-                item['category'] = category
-                yield item
-
-    def _get_checks(self, account, request_args=None, initial=False, days=None):
-        accounts = {
-            'uncleared': 'SOC Distributor Bonus Account:SOC Bonus Uncleared',
-            'cleared': 'SOC Distributor Bonus Account:SOC Bonus Cleared',
-        }
-        account = accounts.get(account)
-        if not request_args:
-            td = days if days else 30
-            start_date = datetime.date.today() - datetime.timedelta(days=td)
-            request_args = [
-                ('AccountFilter', {'FullName': account}),
-                ('IncludeLineItems', '1'),
-            ]
-            if days and not initial:
-                request_args = [
-                    ('ModifiedDateRangeFilter', {'FromModifiedDate': str(start_date)})
-                ] + request_args
-        request_args = OrderedDict(request_args)
-
-        # retrieve uncleared checks
-        response = self.call('CheckQueryRq', request_dictionary=request_args)
-        checks = response['CheckQueryRs'].get('CheckRet', [])
-        if not isinstance(checks, list):
-            checks = [checks]
-
-        # return all checks
-        return checks
-
-    def get_checks(self, request_args=None, initial=False, days=None, accounts=['uncleared', 'cleared']):
-        return chain(*(
-            self._get_checks(account, request_args, initial, days)
-            for account in accounts
-        ))
-            
+    def quickbooks_query(self, query_type, request_args=dict()):
+        request_object = get_request_formatter(query_type, request_args)
+        response = self.call(
+            request_object.request_type,
+            request_dictionary=request_object.request_dictionary,
+        )
+        return request_object.processing_task, request_object.get_response_elements(response)
 
     def get_preferences(self):
         response = self.call('PreferencesQueryRq')

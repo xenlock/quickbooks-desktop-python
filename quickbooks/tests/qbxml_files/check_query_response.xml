@@ -1,0 +1,539 @@
+<?xml version="1.0" ?>
+<QBXML>
+<QBXMLMsgsRs>
+<CheckQueryRs statusCode="0" statusSeverity="Info" statusMessage="Status OK">
+<CheckRet>
+<TxnID>B347B-1233949562</TxnID>
+<TimeCreated>2009-02-06T12:46:02-07:00</TimeCreated>
+<TimeModified>2010-01-09T01:51:10-07:00</TimeModified>
+<EditSequence>1263027070</EditSequence>
+<TxnNumber>215812</TxnNumber>
+<AccountRef>
+<ListID>8000023A-1262982800</ListID>
+<FullName>SOC Distributor Bonus Account:SOC Bonus Uncleared</FullName>
+</AccountRef>
+<PayeeEntityRef>
+<ListID>80004378-1213825193</ListID>
+<FullName>Fake Name</FullName>
+</PayeeEntityRef>
+<RefNumber>136250</RefNumber>
+<TxnDate>2009-01-07</TxnDate>
+<Amount>50.00</Amount>
+<Memo>42721:</Memo>
+<IsToBePrinted>false</IsToBePrinted>
+<ExpenseLineRet>
+<TxnLineID>B347D-1233949562</TxnLineID>
+<AccountRef>
+<ListID>670001-1063658394</ListID>
+<FullName>Distributor Bonus.</FullName>
+</AccountRef>
+<Amount>50.00</Amount>
+<Memo>42721:</Memo>
+<CustomerRef>
+<ListID>80004378-1213825193</ListID>
+<FullName>Carter, Jacque Jennings</FullName>
+</CustomerRef>
+</ExpenseLineRet>
+</CheckRet>
+<CheckRet>
+<TxnID>236DEA-1323230281</TxnID>
+<TimeCreated>2011-12-06T20:58:01-07:00</TimeCreated>
+<TimeModified>2011-12-06T20:58:01-07:00</TimeModified>
+<EditSequence>1323230281</EditSequence>
+<TxnNumber>530853</TxnNumber>
+<AccountRef>
+<ListID>8000023A-1262982800</ListID>
+<FullName>SOC Distributor Bonus Account:SOC Bonus Uncleared</FullName>
+</AccountRef>
+<PayeeEntityRef>
+<ListID>8000B2AA-1296835952</ListID>
+<FullName>Fake Name</FullName>
+</PayeeEntityRef>
+<RefNumber>384951</RefNumber>
+<TxnDate>2011-12-10</TxnDate>
+<Amount>29.75</Amount>
+<Memo>118609:</Memo>
+<IsToBePrinted>false</IsToBePrinted>
+<ExpenseLineRet>
+<TxnLineID>236DEC-1323230281</TxnLineID>
+<AccountRef>
+<ListID>670001-1063658394</ListID>
+<FullName>Distributor Bonus.</FullName>
+</AccountRef>
+<Amount>29.75</Amount>
+<Memo>118609:</Memo>
+<CustomerRef>
+<ListID>8000B2AA-1296835952</ListID>
+<FullName>Martinez &amp; Shanken PLLC</FullName>
+</CustomerRef>
+</ExpenseLineRet>
+</CheckRet>
+<CheckRet>
+<TxnID>236E56-1323230290</TxnID>
+<TimeCreated>2011-12-06T20:58:10-07:00</TimeCreated>
+<TimeModified>2011-12-06T20:58:10-07:00</TimeModified>
+<EditSequence>1323230290</EditSequence>
+<TxnNumber>530889</TxnNumber>
+<AccountRef>
+<ListID>8000023A-1262982800</ListID>
+<FullName>SOC Distributor Bonus Account:SOC Bonus Uncleared</FullName>
+</AccountRef>
+<PayeeEntityRef>
+<ListID>8000B895-1302152185</ListID>
+<FullName>Fake Name</FullName>
+</PayeeEntityRef>
+<RefNumber>384982</RefNumber>
+<TxnDate>2011-12-10</TxnDate>
+<Amount>22.99</Amount>
+<Memo>119305:</Memo>
+<IsToBePrinted>false</IsToBePrinted>
+<ExpenseLineRet>
+<TxnLineID>236E58-1323230290</TxnLineID>
+<AccountRef>
+<ListID>670001-1063658394</ListID>
+<FullName>Distributor Bonus.</FullName>
+</AccountRef>
+<Amount>22.99</Amount>
+<Memo>119305:</Memo>
+<CustomerRef>
+<ListID>8000B895-1302152185</ListID>
+<FullName>Manzone, Steven</FullName>
+</CustomerRef>
+</ExpenseLineRet>
+</CheckRet>
+<CheckRet>
+<TxnID>2372D9-1323230359</TxnID>
+<TimeCreated>2011-12-06T20:59:19-07:00</TimeCreated>
+<TimeModified>2011-12-06T20:59:19-07:00</TimeModified>
+<EditSequence>1323230359</EditSequence>
+<TxnNumber>531274</TxnNumber>
+<AccountRef>
+<ListID>8000023A-1262982800</ListID>
+<FullName>SOC Distributor Bonus Account:SOC Bonus Uncleared</FullName>
+</AccountRef>
+<PayeeEntityRef>
+<ListID>8000BF0E-1308196252</ListID>
+<FullName>Fake Name</FullName>
+</PayeeEntityRef>
+<RefNumber>385310</RefNumber>
+<TxnDate>2011-12-10</TxnDate>
+<Amount>22.68</Amount>
+<Memo>126407:</Memo>
+<IsToBePrinted>false</IsToBePrinted>
+<ExpenseLineRet>
+<TxnLineID>2372DB-1323230359</TxnLineID>
+<AccountRef>
+<ListID>670001-1063658394</ListID>
+<FullName>Distributor Bonus.</FullName>
+</AccountRef>
+<Amount>22.68</Amount>
+<Memo>126407:</Memo>
+<CustomerRef>
+<ListID>8000BF0E-1308196252</ListID>
+<FullName>WILKINSON, ANN</FullName>
+</CustomerRef>
+</ExpenseLineRet>
+</CheckRet>
+<CheckRet>
+<TxnID>237378-1323230374</TxnID>
+<TimeCreated>2011-12-06T20:59:34-07:00</TimeCreated>
+<TimeModified>2011-12-06T20:59:34-07:00</TimeModified>
+<EditSequence>1323230374</EditSequence>
+<TxnNumber>531327</TxnNumber>
+<AccountRef>
+<ListID>8000023A-1262982800</ListID>
+<FullName>SOC Distributor Bonus Account:SOC Bonus Uncleared</FullName>
+</AccountRef>
+<PayeeEntityRef>
+<ListID>8000CD9F-1323230374</ListID>
+<FullName>Fake Name</FullName>
+</PayeeEntityRef>
+<RefNumber>385356</RefNumber>
+<TxnDate>2011-12-10</TxnDate>
+<Amount>24.05</Amount>
+<Memo>127452:</Memo>
+<IsToBePrinted>false</IsToBePrinted>
+<ExpenseLineRet>
+<TxnLineID>23737A-1323230374</TxnLineID>
+<AccountRef>
+<ListID>670001-1063658394</ListID>
+<FullName>Distributor Bonus.</FullName>
+</AccountRef>
+<Amount>24.05</Amount>
+<Memo>127452:</Memo>
+<CustomerRef>
+<ListID>8000CD9F-1323230374</ListID>
+<FullName>Godfrey, Kim</FullName>
+</CustomerRef>
+</ExpenseLineRet>
+</CheckRet>
+<CheckRet>
+<TxnID>29566B-1349997349</TxnID>
+<TimeCreated>2012-10-11T17:15:49-07:00</TimeCreated>
+<TimeModified>2012-10-11T17:15:49-07:00</TimeModified>
+<EditSequence>1349997349</EditSequence>
+<TxnNumber>592761</TxnNumber>
+<AccountRef>
+<ListID>8000023A-1262982800</ListID>
+<FullName>SOC Distributor Bonus Account:SOC Bonus Uncleared</FullName>
+</AccountRef>
+<PayeeEntityRef>
+<ListID>8000EE24-1343108830</ListID>
+<FullName>Fake Name</FullName>
+</PayeeEntityRef>
+<RefNumber>433436</RefNumber>
+<TxnDate>2012-10-10</TxnDate>
+<Amount>57.29</Amount>
+<Memo>147683:</Memo>
+<IsToBePrinted>false</IsToBePrinted>
+<ExpenseLineRet>
+<TxnLineID>29566D-1349997349</TxnLineID>
+<AccountRef>
+<ListID>670001-1063658394</ListID>
+<FullName>Distributor Bonus.</FullName>
+</AccountRef>
+<Amount>57.29</Amount>
+<Memo>147683:</Memo>
+<CustomerRef>
+<ListID>8000EE24-1343108830</ListID>
+<FullName>Richardson, Lilly</FullName>
+</CustomerRef>
+</ExpenseLineRet>
+</CheckRet>
+<CheckRet>
+<TxnID>295944-1349997364</TxnID>
+<TimeCreated>2012-10-11T17:16:04-07:00</TimeCreated>
+<TimeModified>2012-10-11T17:16:04-07:00</TimeModified>
+<EditSequence>1349997364</EditSequence>
+<TxnNumber>593004</TxnNumber>
+<AccountRef>
+<ListID>8000023A-1262982800</ListID>
+<FullName>SOC Distributor Bonus Account:SOC Bonus Uncleared</FullName>
+</AccountRef>
+<PayeeEntityRef>
+<ListID>8000D3DE-1331260618</ListID>
+<FullName>Fake Name</FullName>
+</PayeeEntityRef>
+<RefNumber>433679</RefNumber>
+<TxnDate>2012-10-10</TxnDate>
+<Amount>57.70</Amount>
+<Memo>14870:</Memo>
+<IsToBePrinted>false</IsToBePrinted>
+<ExpenseLineRet>
+<TxnLineID>295946-1349997364</TxnLineID>
+<AccountRef>
+<ListID>670001-1063658394</ListID>
+<FullName>Distributor Bonus.</FullName>
+</AccountRef>
+<Amount>57.70</Amount>
+<Memo>14870:</Memo>
+<CustomerRef>
+<ListID>8000D3DE-1331260618</ListID>
+<FullName>Winer, Pete</FullName>
+</CustomerRef>
+</ExpenseLineRet>
+</CheckRet>
+<CheckRet>
+<TxnID>2B1919-1358177895</TxnID>
+<TimeCreated>2013-01-14T08:38:15-07:00</TimeCreated>
+<TimeModified>2013-01-14T08:38:15-07:00</TimeModified>
+<EditSequence>1358177895</EditSequence>
+<TxnNumber>613284</TxnNumber>
+<AccountRef>
+<ListID>8000023A-1262982800</ListID>
+<FullName>SOC Distributor Bonus Account:SOC Bonus Uncleared</FullName>
+</AccountRef>
+<PayeeEntityRef>
+<ListID>80005E9A-1232952042</ListID>
+<FullName>Fake Name</FullName>
+</PayeeEntityRef>
+<RefNumber>450007</RefNumber>
+<TxnDate>2013-01-10</TxnDate>
+<Amount>20.20</Amount>
+<Memo>62859:</Memo>
+<IsToBePrinted>false</IsToBePrinted>
+<ExpenseLineRet>
+<TxnLineID>2B191B-1358177895</TxnLineID>
+<AccountRef>
+<ListID>670001-1063658394</ListID>
+<FullName>Distributor Bonus.</FullName>
+</AccountRef>
+<Amount>20.20</Amount>
+<Memo>62859:</Memo>
+<CustomerRef>
+<ListID>80005E9A-1232952042</ListID>
+<FullName>Marino, Susan</FullName>
+</CustomerRef>
+</ExpenseLineRet>
+</CheckRet>
+<CheckRet>
+<TxnID>2B192B-1358177895</TxnID>
+<TimeCreated>2013-01-14T08:38:15-07:00</TimeCreated>
+<TimeModified>2013-01-14T08:38:15-07:00</TimeModified>
+<EditSequence>1358177895</EditSequence>
+<TxnNumber>613290</TxnNumber>
+<AccountRef>
+<ListID>8000023A-1262982800</ListID>
+<FullName>SOC Distributor Bonus Account:SOC Bonus Uncleared</FullName>
+</AccountRef>
+<PayeeEntityRef>
+<ListID>8000FAD6-1352443809</ListID>
+<FullName>Fake Name</FullName>
+</PayeeEntityRef>
+<RefNumber>450013</RefNumber>
+<TxnDate>2013-01-10</TxnDate>
+<Amount>38.58</Amount>
+<Memo>63061:</Memo>
+<IsToBePrinted>false</IsToBePrinted>
+<ExpenseLineRet>
+<TxnLineID>2B192D-1358177895</TxnLineID>
+<AccountRef>
+<ListID>670001-1063658394</ListID>
+<FullName>Distributor Bonus.</FullName>
+</AccountRef>
+<Amount>38.58</Amount>
+<Memo>63061:</Memo>
+<CustomerRef>
+<ListID>8000FAD6-1352443809</ListID>
+<FullName>Piggot, Mark &amp; Marie</FullName>
+</CustomerRef>
+</ExpenseLineRet>
+</CheckRet>
+<CheckRet>
+<TxnID>2B19E8-1358177900</TxnID>
+<TimeCreated>2013-01-14T08:38:20-07:00</TimeCreated>
+<TimeModified>2013-01-14T08:38:20-07:00</TimeModified>
+<EditSequence>1358177900</EditSequence>
+<TxnNumber>613353</TxnNumber>
+<AccountRef>
+<ListID>8000023A-1262982800</ListID>
+<FullName>SOC Distributor Bonus Account:SOC Bonus Uncleared</FullName>
+</AccountRef>
+<PayeeEntityRef>
+<ListID>80006712-1239312418</ListID>
+<FullName>Fake Name</FullName>
+</PayeeEntityRef>
+<RefNumber>450076</RefNumber>
+<TxnDate>2013-01-10</TxnDate>
+<Amount>80.11</Amount>
+<Memo>65855:</Memo>
+<IsToBePrinted>false</IsToBePrinted>
+<ExpenseLineRet>
+<TxnLineID>2B19EA-1358177900</TxnLineID>
+<AccountRef>
+<ListID>670001-1063658394</ListID>
+<FullName>Distributor Bonus.</FullName>
+</AccountRef>
+<Amount>80.11</Amount>
+<Memo>65855:</Memo>
+<CustomerRef>
+<ListID>80006712-1239312418</ListID>
+<FullName>Victoria Boyce Galleries</FullName>
+</CustomerRef>
+</ExpenseLineRet>
+</CheckRet>
+<CheckRet>
+<TxnID>2D5373-1368050872</TxnID>
+<TimeCreated>2013-05-08T16:07:52-07:00</TimeCreated>
+<TimeModified>2013-05-08T16:07:52-07:00</TimeModified>
+<EditSequence>1368050872</EditSequence>
+<TxnNumber>637626</TxnNumber>
+<AccountRef>
+<ListID>8000023A-1262982800</ListID>
+<FullName>SOC Distributor Bonus Account:SOC Bonus Uncleared</FullName>
+</AccountRef>
+<PayeeEntityRef>
+<ListID>80007260-1248904444</ListID>
+<FullName>Fake Name</FullName>
+</PayeeEntityRef>
+<RefNumber>468334</RefNumber>
+<TxnDate>2013-05-10</TxnDate>
+<Amount>22.80</Amount>
+<Memo>73911:</Memo>
+<IsToBePrinted>false</IsToBePrinted>
+<ExpenseLineRet>
+<TxnLineID>2D5375-1368050872</TxnLineID>
+<AccountRef>
+<ListID>670001-1063658394</ListID>
+<FullName>Distributor Bonus.</FullName>
+</AccountRef>
+<Amount>22.80</Amount>
+<Memo>73911:</Memo>
+<CustomerRef>
+<ListID>80007260-1248904444</ListID>
+<FullName>The Dru Elliot Group, LLC</FullName>
+</CustomerRef>
+</ExpenseLineRet>
+</CheckRet>
+<CheckRet>
+<TxnID>2D53D6-1368050874</TxnID>
+<TimeCreated>2013-05-08T16:07:54-07:00</TimeCreated>
+<TimeModified>2013-05-08T16:07:54-07:00</TimeModified>
+<EditSequence>1368050874</EditSequence>
+<TxnNumber>637659</TxnNumber>
+<AccountRef>
+<ListID>8000023A-1262982800</ListID>
+<FullName>SOC Distributor Bonus Account:SOC Bonus Uncleared</FullName>
+</AccountRef>
+<PayeeEntityRef>
+<ListID>80008C12-1265674215</ListID>
+<FullName>Fake Name</FullName>
+</PayeeEntityRef>
+<RefNumber>468367</RefNumber>
+<TxnDate>2013-05-10</TxnDate>
+<Amount>37.34</Amount>
+<Memo>75773:</Memo>
+<IsToBePrinted>false</IsToBePrinted>
+<ExpenseLineRet>
+<TxnLineID>2D53D8-1368050874</TxnLineID>
+<AccountRef>
+<ListID>670001-1063658394</ListID>
+<FullName>Distributor Bonus.</FullName>
+</AccountRef>
+<Amount>37.34</Amount>
+<Memo>75773:</Memo>
+<CustomerRef>
+<ListID>80008C12-1265674215</ListID>
+<FullName>Wessinger, Julie A.</FullName>
+</CustomerRef>
+</ExpenseLineRet>
+</CheckRet>
+<CheckRet>
+<TxnID>306497-1387911279</TxnID>
+<TimeCreated>2013-12-24T11:54:39-07:00</TimeCreated>
+<TimeModified>2014-12-23T13:39:59-07:00</TimeModified>
+<EditSequence>1419367199</EditSequence>
+<TxnNumber>674931</TxnNumber>
+<AccountRef>
+<ListID>8000023A-1262982800</ListID>
+<FullName>SOC Distributor Bonus Account:SOC Bonus Uncleared</FullName>
+</AccountRef>
+<PayeeEntityRef>
+<ListID>8000F5E1-1349997291</ListID>
+<FullName>Fake Name</FullName>
+</PayeeEntityRef>
+<RefNumber>494445</RefNumber>
+<TxnDate>2013-12-10</TxnDate>
+<Amount>24.62</Amount>
+<Memo>148501:</Memo>
+<IsToBePrinted>false</IsToBePrinted>
+<ExpenseLineRet>
+<TxnLineID>306499-1387911279</TxnLineID>
+<AccountRef>
+<ListID>670001-1063658394</ListID>
+<FullName>Distributor Bonus.</FullName>
+</AccountRef>
+<Amount>24.62</Amount>
+<Memo>148501:</Memo>
+<CustomerRef>
+<ListID>8000F5E1-1349997291</ListID>
+<FullName>Watt, Hunter</FullName>
+</CustomerRef>
+</ExpenseLineRet>
+</CheckRet>
+<CheckRet>
+<TxnID>3500DA-1403559502</TxnID>
+<TimeCreated>2014-06-23T15:38:22-07:00</TimeCreated>
+<TimeModified>2014-06-23T15:38:22-07:00</TimeModified>
+<EditSequence>1403559502</EditSequence>
+<TxnNumber>702121</TxnNumber>
+<AccountRef>
+<ListID>8000023A-1262982800</ListID>
+<FullName>SOC Distributor Bonus Account:SOC Bonus Uncleared</FullName>
+</AccountRef>
+<PayeeEntityRef>
+<ListID>8000FC9D-1352444181</ListID>
+<FullName>Fake Name</FullName>
+</PayeeEntityRef>
+<RefNumber>509842</RefNumber>
+<TxnDate>2014-05-10</TxnDate>
+<Amount>20.86</Amount>
+<Memo>146178:</Memo>
+<IsToBePrinted>false</IsToBePrinted>
+<ExpenseLineRet>
+<TxnLineID>3500DC-1403559502</TxnLineID>
+<AccountRef>
+<ListID>670001-1063658394</ListID>
+<FullName>Distributor Bonus.</FullName>
+</AccountRef>
+<Amount>20.86</Amount>
+<Memo>146178:</Memo>
+<CustomerRef>
+<ListID>800127FD-1403559501</ListID>
+<FullName>Ross, Brent.</FullName>
+</CustomerRef>
+<BillableStatus>Billable</BillableStatus>
+</ExpenseLineRet>
+</CheckRet>
+<CheckRet>
+<TxnID>350334-1403561290</TxnID>
+<TimeCreated>2014-06-23T16:08:10-07:00</TimeCreated>
+<TimeModified>2016-07-07T13:02:08-07:00</TimeModified>
+<EditSequence>1467918128</EditSequence>
+<TxnNumber>702226</TxnNumber>
+<AccountRef>
+<ListID>8000023A-1262982800</ListID>
+<FullName>SOC Distributor Bonus Account:SOC Bonus Uncleared</FullName>
+</AccountRef>
+<PayeeEntityRef>
+<ListID>800061E0-1236274473</ListID>
+<FullName>Fake Name</FullName>
+</PayeeEntityRef>
+<RefNumber>509940</RefNumber>
+<TxnDate>2014-05-10</TxnDate>
+<Amount>24.74</Amount>
+<Memo>149571:</Memo>
+<IsToBePrinted>false</IsToBePrinted>
+<ExpenseLineRet>
+<TxnLineID>350336-1403561290</TxnLineID>
+<AccountRef>
+<ListID>670001-1063658394</ListID>
+<FullName>Distributor Bonus.</FullName>
+</AccountRef>
+<Amount>24.74</Amount>
+<Memo>149571:</Memo>
+<CustomerRef>
+<ListID>80012424-1403549024</ListID>
+<FullName>Flynn, Amy.</FullName>
+</CustomerRef>
+<BillableStatus>Billable</BillableStatus>
+</ExpenseLineRet>
+</CheckRet>
+<CheckRet>
+<TxnID>45748B-1466610471</TxnID>
+<TimeCreated>2016-06-22T09:47:51-07:00</TimeCreated>
+<TimeModified>2016-06-22T09:47:51-07:00</TimeModified>
+<EditSequence>1466610471</EditSequence>
+<TxnNumber>814605</TxnNumber>
+<AccountRef>
+<ListID>80000315-1463782908</ListID>
+<FullName>ACH (Clearing Account)</FullName>
+</AccountRef>
+<PayeeEntityRef>
+<ListID>80011130-1371763921</ListID>
+<FullName>Fake Name</FullName>
+</PayeeEntityRef>
+<RefNumber>136250</RefNumber>
+<TxnDate>2016-04-04</TxnDate>
+<Amount>120.00</Amount>
+<Memo>NACHA Key Bank</Memo>
+<Address>
+<Country>USA</Country>
+</Address>
+<AddressBlock>
+<Addr2>USA</Addr2>
+</AddressBlock>
+<IsToBePrinted>false</IsToBePrinted>
+<ExpenseLineRet>
+<TxnLineID>45748D-1466610471</TxnLineID>
+<AccountRef>
+<ListID>670001-1063658394</ListID>
+<FullName>Distributor Bonus.</FullName>
+</AccountRef>
+<Amount>120.00</Amount>
+<Memo>154735</Memo>
+</ExpenseLineRet>
+</CheckRet>
+</CheckQueryRs>
+</QBXMLMsgsRs>
+</QBXML>

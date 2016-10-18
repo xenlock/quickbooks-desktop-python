@@ -1,0 +1,24 @@
+<?xml version="1.0" ?>
+<?qbxml version="13.0"?>
+<QBXML>
+  <QBXMLMsgsRq onError="stopOnError">
+    <CheckQueryRq>
+      <RefNumber>384951</RefNumber>
+      <RefNumber>385310</RefNumber>
+      <RefNumber>509842</RefNumber>
+      <RefNumber>136250</RefNumber>
+      <RefNumber>384982</RefNumber>
+      <RefNumber>450013</RefNumber>
+      <RefNumber>468334</RefNumber>
+      <RefNumber>450007</RefNumber>
+      <RefNumber>433436</RefNumber>
+      <RefNumber>385356</RefNumber>
+      <RefNumber>494445</RefNumber>
+      <RefNumber>450076</RefNumber>
+      <RefNumber>433679</RefNumber>
+      <RefNumber>509940</RefNumber>
+      <RefNumber>468367</RefNumber>
+      <IncludeLineItems>1</IncludeLineItems>
+    </CheckQueryRq>
+  </QBXMLMsgsRq>
+</QBXML>

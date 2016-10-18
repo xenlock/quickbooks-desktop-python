@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+<?qbxml version="13.0"?>
+<QBXML>
+  <QBXMLMsgsRq onError="stopOnError">
+    <ItemQueryRq>
+      <FullName>25-105370</FullName>
+      <FullName>11964</FullName>
+      <FullName>70-106075</FullName>
+      <FullName>11028</FullName>
+      <FullName>10641</FullName>
+      <FullName>11134</FullName>
+      <FullName>12582</FullName>
+      <FullName>MPVR30645</FullName>
+      <FullName>564 (Old)</FullName>
+      <FullName>12748</FullName>
+      <FullName>S-14998</FullName>
+      <FullName>12120</FullName>
+      <FullName>MPVR38609</FullName>
+      <FullName>20-300765</FullName>
+      <FullName>560</FullName>
+    </ItemQueryRq>
+  </QBXMLMsgsRq>
+</QBXML>
