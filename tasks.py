@@ -20,7 +20,7 @@ logger = get_task_logger(__name__)
 SOFT_TIME_LIMIT = 3600
 
 
-@celery_app.task(name='qb_desktop.tasks.qb_requests', track_started=True, max_retries=5, soft_time_limit=3600)
+@celery_app.task(name='qb_desktop.tasks.qb_requests', track_started=True, max_retries=5, soft_time_limit=SOFT_TIME_LIMIT)
 def qb_requests(request_list=None, initial=False, with_sides=True, app='quickbooks', days=3):
     """
     Always send a list of requests so we aren't opening and closing file more than necessary
@@ -63,62 +63,20 @@ def qb_requests(request_list=None, initial=False, with_sides=True, app='quickboo
         del(qb)
 
 
-@celery_app.task(name='qb_desktop.tasks.get_purchase_orders', track_started=True, max_retries=5, soft_time_limit=3600)
-def get_purchase_orders(query_params):
-    try:
-        qb = QuickBooks(**QB_LOOKUP)
-        qb.begin_session()
-        for item in qb.get_purchase_orders(query_params):
-            celery_app.send_task(
-                'quickbooks.tasks.process_purchase_order',
-                queue='quickbooks',
-                args=[item], expires=1800
-            )
-        celery_app.send_task(
-            'quickbooks.tasks.post_purchase_orders_to_snapfulfil',
-            queue='quickbooks',
-            expires=1800
-        )
-        celery_app.send_task(
-                'quickbooks.tasks.process_preferences',
-                queue='quickbooks',
-                args=[qb.get_preferences()], expires=1800
-        )
-    finally:
-        del(qb)
-
-
-@celery_app.task(name='qb_desktop.tasks.get_items', track_started=True, max_retries=5, soft_time_limit=3600)
-def get_items(query_params):
+@celery_app.task(name='qb_desktop.tasks.quickbooks_query', track_started=True, max_retries=5, soft_time_limit=SOFT_TIME_LIMIT)
+def quickbooks_query(query_type, query_params):
     """
-    this task takes no arguments and just grabs every item in Quickbooks and sends a task to process the response for each item.  I will likely be adding argument for item type in the future.
+    args are query type string and any query_params which should be a dict
+    query types include 
+    purchase_order, item, check
     """
     try:
         qb = QuickBooks(**QB_LOOKUP)
         qb.begin_session()
-        for item in qb.get_items(query_params):
+        processing_task, results = qb.quickbooks_query(query_type, query_params)
+        for item in results:
             celery_app.send_task(
-                'quickbooks.tasks.process_item',
-                queue='quickbooks',
-                args=[item], expires=3600
-            )
-    finally:
-        del(qb)
-
-
-@celery_app.task(name='qb_desktop.tasks.get_checks', track_started=True, max_retries=5, soft_time_limit=3600)
-def get_checks(query_params):
-    """
-    grab all cleared and uncleared Distributor checks
-    """
-    try:
-        qb = QuickBooks(**QB_LOOKUP)
-        qb.begin_session()
-        for check in qb.get_checks(query_params):
-            celery_app.send_task(
-                'quickbooks.tasks.process_check',
-                queue='quickbooks',
-                args=[check], expires=3600
+                processing_task, queue='quickbooks', args=[item], expires=1800
             )
     finally:
         del(qb)

@@ -15,9 +15,13 @@ import win32api
 from win32com.client import Dispatch, constants
 from win32com.client.makepy import GenerateFromTypeLibSpec
 
-from .exceptions import QuickBooksError
+from .exceptions import AdapterNotFound, QuickBooksError
 from .qbxml_serializers import format_request, parse_response
-from .qbxml_request_formatter import CheckQueryRequest, ItemQueryRequest, PurchaseOrderQueryRequest
+from .qbxml_request_formatter import (
+    CheckQueryRequest,
+    ItemQueryRequest,
+    PurchaseOrderQueryRequest
+)
 
 
 # After running the following command, you can check the generated type library
@@ -32,6 +36,20 @@ def save_request_xml(request_type, request):
     file_name = '{}-{}{}.xml'.format(now, uuid.uuid4(), request_type)
     with open(file_name, 'wt') as fout:
         fout.write(request)
+
+
+def get_request_formatter(request_type, query_params):
+    adapters = {
+        'check': CheckQueryRequest,
+        'item': ItemQueryRequest,
+        'purchase_order': PurchaseOrderQueryRequest,
+    }
+    try:
+        return adapters[request_type](**query_params)
+    except KeyError:
+        raise AdapterNotFound(
+            "Adapter for {0} not found.".format(request_type)
+        )
 
 
 class QuickBooks(object):
@@ -100,29 +118,13 @@ class QuickBooks(object):
             save_request_xml(request_type, response)
         return parse_response(request_type, response)
 
-    def get_purchase_orders(self, request_args=dict()):
-        request_object = PurchaseOrderQueryRequest(**request_args)
+    def quickbooks_query(self, query_type, request_args=dict()):
+        request_object = get_request_formatter(query_type, request_args)
         response = self.call(
             request_object.request_type,
             request_dictionary=request_object.request_dictionary,
         )
-        return request_object.get_response_elements(response)
-
-    def get_items(self, request_args=dict()):
-        request_object = ItemQueryRequest(**request_args)
-        response = self.call(
-            request_object.request_type,
-            request_dictionary=request_object.request_dictionary,
-        )
-        return request_object.get_response_elements(response)
-
-    def get_checks(self, request_args=dict()):
-        request_object = CheckQueryRequest(**request_args)
-        response = self.call(
-            request_object.request_type,
-            request_dictionary=request_object.request_dictionary,
-        )
-        return request_object.get_response_elements(response)
+        return request_object.processing_task, request_object.get_response_elements(response)
 
     def get_preferences(self):
         response = self.call('PreferencesQueryRq')
