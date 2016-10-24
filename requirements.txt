@@ -8,6 +8,7 @@ freezegun==0.3.7
 ipython==5.1.0
 ipython_genutils==0.1.0
 kombu==3.0.26
+py==1.4.31
 pypm==1.4.3
 pyreadline==2.1
 pytest==3.0.3

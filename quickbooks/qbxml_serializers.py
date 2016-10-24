@@ -65,7 +65,7 @@ def format_request_part(key, value):
             # If value is a list of repeating elements
             else:
                 parts += format_request_part(key, entry)
-        return sorted(parts)
+        return parts
     # If value is neither a dictionary nor a list,
     else:
         part = ET.Element(key)
