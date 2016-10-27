@@ -124,7 +124,7 @@ class QuickBooks(object):
             request_object.request_type,
             request_dictionary=request_object.request_dictionary,
         )
-        return request_object.processing_task, request_object.get_response_elements(response)
+        return request_object.get_response_elements(response)
 
     def get_preferences(self):
         response = self.call('PreferencesQueryRq')

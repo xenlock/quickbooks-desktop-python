@@ -150,5 +150,5 @@ class TestPurchaseOrderRequests(unittest.TestCase):
         )
         # test that purchase order specific logic filters out unnecessary 
         response_elements = request_object.get_response_elements(parsed_response)
-        self.assertEquals(len(list(response_elements)), 56)
+        self.assertEquals(len(list(response_elements)), 47)
 

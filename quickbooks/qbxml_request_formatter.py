@@ -147,16 +147,12 @@ class QuickBooksQueryRequest(object):
 
 
 class CheckQueryRequest(QuickBooksQueryRequest):
-    processing_task = 'quickbooks.tasks.process_check'
-
     def __init__(self, **kwargs):
         kwargs['account_names'] = DISTRIBUTOR_ACCOUNTS
         super(CheckQueryRequest, self).__init__('CheckQueryRq', 'CheckQueryRs', 'CheckRet', **kwargs)
 
 
 class ItemQueryRequest(QuickBooksQueryRequest):
-    processing_task = 'quickbooks.tasks.process_item'
-
     def __init__(self, **kwargs):
         kwargs['include_line_items'] = False
         super(ItemQueryRequest, self).__init__('ItemQueryRq', 'ItemQueryRs', **kwargs)
@@ -181,8 +177,6 @@ class ItemQueryRequest(QuickBooksQueryRequest):
                 yield item
 
 class PurchaseOrderQueryRequest(QuickBooksQueryRequest):
-    processing_task = 'quickbooks.tasks.process_purchase_order'
-
     def __init__(self, **kwargs):
         super(PurchaseOrderQueryRequest, self).__init__(
             'PurchaseOrderQueryRq', 
@@ -211,8 +205,8 @@ class PurchaseOrderQueryRequest(QuickBooksQueryRequest):
                 for group in po_line_groups: 
                     po_lines += pluralize(group.get('PurchaseOrderLineRet', list()))
 
-            if po_lines:
-                purchase_order['po_lines'] = po_lines
-                verified_pos.append(purchase_order)
+                if po_lines:
+                    purchase_order['po_lines'] = po_lines
+                    verified_pos.append(purchase_order)
         return verified_pos
 
