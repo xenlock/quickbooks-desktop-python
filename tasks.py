@@ -21,22 +21,14 @@ SOFT_TIME_LIMIT = 3600
 
 
 @celery_app.task(name='qb_desktop.tasks.qb_requests', track_started=True, max_retries=5, soft_time_limit=SOFT_TIME_LIMIT)
-def qb_requests(request_list=None, initial=False, with_sides=True, app='quickbooks', days=3):
+def qb_requests(request_list=None, app='quickbooks'):
     """
     Always send a list of requests so we aren't opening and closing file more than necessary
     ex: 
     qb_requests.delay([
-            (item_key, model_name, ('ItemReceiptAddRq', receipt_instance.quickbooks_request_tuple)),
-            (item_key, model_name, ('ItemReceiptAddRq', receipt_instance.quickbooks_request_tuple))
-            ])
-
-    By default we are also grabbing and returning list of all open purchase orders in the process and likely performing some more tasks going forward.  This way we get the latest list of purchase orders each time we post item receipts.  This is optional if we are making a lot of requests that don't need to be concerned with purchase orders for every request.
-
-    qb_requests.delay([
-            (item_key, model_name, ('ItemReceiptAddRq', receipt_instance.quickbooks_request_tuple)),
-            (item_key, model_name, ('ItemReceiptAddRq', receipt_instance.quickbooks_request_tuple))
-            ], with_sides=False)
-
+        (item_key, model_name, ('ItemReceiptAddRq', receipt_instance.quickbooks_request_tuple)),
+        (item_key, model_name, ('ItemReceiptAddRq', receipt_instance.quickbooks_request_tuple))
+    ])
     """
     try:
         qb = QuickBooks(**QB_LOOKUP)
@@ -58,6 +50,11 @@ def qb_requests(request_list=None, initial=False, with_sides=True, app='quickboo
                 except Exception as e:
                     logger.error(e)
 
+        celery_app.send_task(
+            'quickbooks.tasks.process_preferences',
+            queue='quickbooks',
+            args=[qb.get_preferences()], expires=1800
+        )
     finally:
         # making sure to end session and close file
         del(qb)
@@ -73,11 +70,11 @@ def quickbooks_query(query_type, query_params):
     try:
         qb = QuickBooks(**QB_LOOKUP)
         qb.begin_session()
-        processing_task, results = qb.quickbooks_query(query_type, query_params)
-        for item in results:
-            celery_app.send_task(
-                processing_task, queue='quickbooks', args=[item], expires=1800
-            )
+        results = qb.quickbooks_query(query_type, query_params)
+        celery_app.send_task(
+            'quickbooks.tasks.process_quickbooks_entities',
+            queue='quickbooks', args=[query_type, list(results)], expires=1800
+        )
     finally:
         del(qb)
 
@@ -88,9 +85,9 @@ def pretty_print(request_list):
     send the same list of requests as you would to qb_request without the key or model name.  The requests will be formatted to qbxml and saved to files in the worker directory where they can be tested using the qbxml validator from intuit
     ex: 
     pretty_print.delay([
-            (item_key, model_name, ('ItemReceiptAddRq', receipt_instance.quickbooks_request_tuple)),
-            (item_key, model_name, ('ItemReceiptAddRq', receipt_instance.quickbooks_request_tuple))
-            ])
+        (item_key, model_name, ('ItemReceiptAddRq', receipt_instance.quickbooks_request_tuple)),
+        (item_key, model_name, ('ItemReceiptAddRq', receipt_instance.quickbooks_request_tuple))
+    ])
 
     """
     qb = QuickBooks(**QB_LOOKUP)
