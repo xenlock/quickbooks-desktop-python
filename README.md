@@ -1,8 +1,5 @@
 # quickbooks-desktop-python
-forking the following project https://github.com/invisibleroads/inteum-quickbooks-sync
-
-It appears to be abandoned for good reason.  I think most of the planet has moved from Quickbooks desktop except me unforunately.  
-Looking to utilize the qbcom and qbxml modules.
+forking the following project https://github.com/DanHanson82/quickbooks-desktop-python
 
 Implementing using celery worker running on a windows machine using activestate active python installation listed below for com module.
 Most of the logic will be performed by outside project running on well behaved operating systems.  
